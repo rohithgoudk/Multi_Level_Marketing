@@ -745,17 +745,24 @@
       content.innerHTML = '<span class="signup-spinner"></span> Creating Account...';
 
       setTimeout(function () {
-        window.location.href = "/404";
+        window.location.href = "404.html";
       }, 1500);
     }
   });
 
-  function handleSocialLogin() { window.location.href = "/404"; }
+  // FIXED: Social login buttons now navigate to 404.html
+  function handleSocialLogin() { 
+    window.location.href = "404.html"; 
+  }
+  
   document.getElementById("social-google").addEventListener("click", handleSocialLogin);
   document.getElementById("social-facebook").addEventListener("click", handleSocialLogin);
   document.getElementById("social-github").addEventListener("click", handleSocialLogin);
 
-  document.getElementById("back-btn").addEventListener("click", function () { window.location.href = "/"; });
+  // FIXED: Back button now navigates to index.html
+  document.getElementById("back-btn").addEventListener("click", function () { 
+    window.location.href = "index.html"; 
+  });
 </script>
 
 </body>
