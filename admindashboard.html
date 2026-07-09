@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -488,6 +487,15 @@ let productSearch = "";
 let settingsState = { notifications: true, emailDigest: false, darkMode: true, language: "English" };
 
 // ─────────────────────────────────────────────────────────────
+// 404 redirect for all non-sidebar clicks
+// ─────────────────────────────────────────────────────────────
+function go404(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  window.location.href = "404.html";
+}
+
+// ─────────────────────────────────────────────────────────────
 // PAGE RENDERERS
 // ─────────────────────────────────────────────────────────────
 
@@ -905,7 +913,8 @@ function renderSidebarNav() {
     </button>`).join("");
 
   nav.querySelectorAll("[data-nav]").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
       activeNav = btn.getAttribute("data-nav");
       sidebarOpen = false;
       renderAll();
@@ -937,6 +946,32 @@ function renderSidebarState() {
 }
 
 function wirePageControls() {
+  // All interactive elements inside content-area go to 404 except sidebar nav and sidebar toggles
+  const area = document.getElementById("contentArea");
+  if (area) {
+    area.querySelectorAll("button, .stat-card, .alert-item, .region-item, .legend-item, .approval-item, .approval-card, .team-filter-btn, .role-filter-btn, .btn-outline, .btn-primary, .btn-icon, .btn-approve, .btn-reject, .btn-danger, .toggle, .language-select, .nav-item, .close-btn, .hamburger, .logout-full-btn").forEach(el => {
+      // Skip sidebar nav items (they are not inside content-area)
+      if (el.closest("#sidebarNav") || el.closest("#sidebar")) return;
+      // Skip toggle switches and language selects (they are interactive but we keep them functional)
+      if (el.classList.contains("toggle") || el.tagName === "SELECT") return;
+      if (el.closest(".toggle") || el.closest(".language-select")) return;
+      // For stat cards, they are meant to be clickable -> 404
+      if (el.classList.contains("stat-card")) { el.addEventListener("click", go404); return; }
+      if (el.classList.contains("alert-item")) { el.addEventListener("click", go404); return; }
+      if (el.classList.contains("region-item")) { el.addEventListener("click", go404); return; }
+      if (el.classList.contains("legend-item")) { el.addEventListener("click", go404); return; }
+      if (el.classList.contains("approval-item")) { el.addEventListener("click", go404); return; }
+      if (el.classList.contains("approval-card")) { el.addEventListener("click", go404); return; }
+      if (el.tagName === "BUTTON") {
+        // Skip filter buttons that need to work
+        if (el.classList.contains("team-filter-btn") || el.classList.contains("role-filter-btn")) return;
+        if (el.closest(".filter-row")) return;
+        el.addEventListener("click", go404);
+      }
+    });
+  }
+
+  // Search inputs (they are interactive but we keep them functional)
   const distSearch = document.getElementById("distributorSearchInput");
   if (distSearch) {
     distSearch.addEventListener("input", (e) => {
@@ -946,15 +981,18 @@ function wirePageControls() {
       if (el) { el.focus(); el.selectionStart = el.selectionEnd = el.value.length; }
     });
   }
+
   document.querySelectorAll(".role-filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
       distributorRoleFilter = btn.getAttribute("data-role");
       renderContent();
     });
   });
 
   document.querySelectorAll(".team-filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
       teamFilter = btn.getAttribute("data-status");
       renderContent();
     });
@@ -970,8 +1008,10 @@ function wirePageControls() {
     });
   }
 
+  // Toggles and language select
   document.querySelectorAll("[data-toggle]").forEach(t => {
-    t.addEventListener("click", () => {
+    t.addEventListener("click", (e) => {
+      e.stopPropagation();
       const key = t.getAttribute("data-toggle");
       settingsState[key] = !settingsState[key];
       renderContent();
@@ -979,7 +1019,10 @@ function wirePageControls() {
   });
   const langSelect = document.getElementById("languageSelect");
   if (langSelect) {
-    langSelect.addEventListener("change", (e) => { settingsState.language = e.target.value; });
+    langSelect.addEventListener("change", (e) => {
+      e.stopPropagation();
+      settingsState.language = e.target.value;
+    });
   }
 }
 
@@ -990,9 +1033,28 @@ function renderAll() {
   renderSidebarState();
 }
 
-document.getElementById("hamburgerBtn").addEventListener("click", () => { sidebarOpen = true; renderSidebarState(); });
-document.getElementById("closeSidebarBtn").addEventListener("click", () => { sidebarOpen = false; renderSidebarState(); });
-document.getElementById("sidebarOverlay").addEventListener("click", () => { sidebarOpen = false; renderSidebarState(); });
+// Sidebar controls
+document.getElementById("hamburgerBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  sidebarOpen = true;
+  renderSidebarState();
+});
+document.getElementById("closeSidebarBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  sidebarOpen = false;
+  renderSidebarState();
+});
+document.getElementById("sidebarOverlay").addEventListener("click", () => {
+  sidebarOpen = false;
+  renderSidebarState();
+});
+
+// Topbar search and notification button -> 404
+document.querySelector(".topbar .search-box")?.addEventListener("click", go404);
+document.querySelector(".topbar .search-box input")?.addEventListener("focus", go404);
+document.querySelector(".topbar .icon-btn")?.addEventListener("click", go404);
+
+// Sidebar logout -> login.html (already linked)
 
 renderAll();
 </script>
