@@ -338,6 +338,8 @@
       font-weight: 600;
       text-decoration: underline;
       text-underline-offset: 2px;
+      cursor: pointer;
+      padding: 0;
     }
     .signup-login-link:hover { color: var(--ivory); }
 
@@ -573,7 +575,7 @@
       </div>
 
       <div class="signup-login">
-        <p>Already have an account? <button type="button" class="signup-login-link" id="login-btn">Sign in</button></p>
+        <p>Already have an account? <a href="login.html" class="signup-login-link">Sign in</a></p>
       </div>
 
     </div>
@@ -754,7 +756,6 @@
   document.getElementById("social-github").addEventListener("click", handleSocialLogin);
 
   document.getElementById("back-btn").addEventListener("click", function () { window.location.href = "/"; });
-  document.getElementById("login-btn").addEventListener("click", function () { window.location.href = "Login.html"; });
 </script>
 
 </body>
