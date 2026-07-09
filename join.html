@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join | Stackly</title>
+  <meta name="description" content="Choose a Stackly starter kit, get paired with a mentor, and open your personal storefront this week.">
+  <style>
+    /* ----- reset & variables ----- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #fff;
+      color: #1f2937;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    ul { list-style: none; }
+
+    :root {
+      --orange: #F26522;
+      --orange-dark: #e05a1a;
+      --orange-tint: #fff2ea;
+      --orange-border: #ffd9c2;
+      --ink: #14161f;
+      --ink-soft: #1a1d2e;
+      --text: #1f2937;
+      --text-muted: #4b5563;
+      --gray-bg: #f6f7f9;
+      --gray-300: #eceef1;
+      --border: #e5e7eb;
+      --radius: 16px;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; }
+    .px { padding-left: 24px; padding-right: 24px; }
+    .section-white { background: #fff; padding: 88px 0; }
+    .section-gray { background: var(--gray-bg); padding: 88px 0; }
+
+    /* ----- header ----- */
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: #fff; border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      max-width: 1200px; margin: 0 auto; padding: 16px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .logo-img { height: 30px; width: auto; }
+    .header-nav { display: flex; align-items: center; gap: 32px; }
+    .header-nav a {
+      font-size: 15px; font-weight: 600; color: var(--text-muted);
+      transition: color .2s; padding: 4px 0; position: relative;
+    }
+    .header-nav a:hover { color: var(--ink); }
+    .header-nav a.active { color: var(--ink); }
+    .header-nav a.active::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: -4px;
+      height: 2px; background: var(--orange); border-radius: 2px;
+    }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .nav-toggle {
+      display: none; background: none; border: none; width: 26px; height: 26px;
+      color: var(--ink); cursor: pointer; padding: 0;
+    }
+    .nav-toggle svg { width: 100%; height: 100%; }
+
+    .roll-btn {
+      position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 10px;
+      padding: 13px 26px; border-radius: 999px; font-weight: 600; font-size: 14.5px;
+      cursor: pointer; border: none; line-height: 1; white-space: nowrap;
+    }
+    .roll-btn.orange { background: var(--orange); color: #fff; }
+    .roll-btn.dark { background: var(--ink); color: #fff; }
+    .roll-btn.big { padding: 17px 32px; font-size: 15.5px; }
+    .roll-text { display: inline-block; overflow: hidden; height: 1.2em; }
+    .roll-text-inner { display: flex; flex-direction: column; transition: transform .35s cubic-bezier(.65,0,.35,1); }
+    .roll-text-inner span { height: 1.2em; line-height: 1.2em; display: block; }
+    .roll-btn:hover .roll-text-inner { transform: translateY(-1.2em); }
+    .roll-arrow { display: inline-flex; width: 16px; height: 16px; flex-shrink: 0; }
+    .roll-arrow svg { width: 100%; height: 100%; }
+
+    /* mobile menu */
+    .mobile-menu { position: fixed; inset: 0; z-index: 200; display: none; }
+    .mobile-menu.open { display: block; }
+    .mobile-menu-backdrop { position: absolute; inset: 0; background: rgba(20,22,31,.45); }
+    .mobile-sheet {
+      position: absolute; top: 0; right: 0; bottom: 0; width: 78%; max-width: 320px;
+      background: #fff; padding: 28px 24px; display: flex; flex-direction: column;
+      gap: 28px; box-shadow: -8px 0 30px rgba(0,0,0,.12);
+    }
+    .mobile-nav-links { display: flex; flex-direction: column; gap: 18px; }
+    .mobile-nav-links a { font-size: 17px; font-weight: 600; color: var(--ink); }
+
+    /* badges */
+    .badge-row { display: flex; justify-content: center; margin-bottom: 18px; }
+    .badge-pill {
+      display: inline-block; padding: 7px 16px; border-radius: 999px;
+      background: var(--orange-tint); color: var(--orange-dark);
+      font-size: 13px; font-weight: 700; border: 1px solid var(--orange-border);
+    }
+    .badge-pill.gray-300 { background: var(--gray-300); color: var(--text-muted); border-color: #d7dbe0; }
+    .section-heading {
+      text-align: center; font-size: clamp(26px,3.4vw,38px); line-height: 1.28;
+      font-weight: 700; color: var(--ink); max-width: 720px; margin: 0 auto 44px;
+    }
+    .section-heading.tight { margin-bottom: 36px; }
+
+    /* hero */
+    .page-hero {
+      position: relative; padding: 96px 0 76px; overflow: hidden;
+      background: var(--ink-soft);
+    }
+    .page-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(1100px 480px at 15% -10%, rgba(242,101,34,.35), transparent 60%),
+                  radial-gradient(900px 420px at 100% 0%, rgba(242,101,34,.18), transparent 55%);
+    }
+    .page-hero-content { position: relative; text-align: center; color: #fff; }
+    .page-hero .badge-pill { background: rgba(255,255,255,.12); color: #ffd9c2; border-color: rgba(255,217,194,.35); }
+    .page-hero h1 { font-size: clamp(30px,4.6vw,52px); line-height: 1.16; font-weight: 800; margin: 18px 0 18px; }
+    .page-hero p { font-size: 16.5px; color: #cfd2dd; max-width: 600px; margin: 0 auto 34px; line-height: 1.65; }
+    .hero-cta-row { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+    /* stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; text-align: center; }
+    .stat-number { font-size: clamp(26px,3vw,34px); font-weight: 800; color: var(--orange); }
+    .stat-label { font-size: 13.5px; color: var(--text-muted); margin-top: 6px; }
+
+    /* steps */
+    .steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 22px; }
+    .step-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 22px; }
+    .badge-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 50%; background: var(--orange-tint);
+      color: var(--orange-dark); font-weight: 800; font-size: 14px; margin-bottom: 14px;
+    }
+    .step-card h3 { margin: 0 0 8px; font-size: 17px; color: var(--ink); }
+    .step-card p { margin: 0; font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+    /* pricing */
+    .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+    .price-card {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 30px 26px; position: relative;
+    }
+    .price-card.featured { border-color: var(--orange); box-shadow: 0 14px 34px rgba(242,101,34,.16); }
+    .price-badge {
+      position: absolute; top: -12px; left: 26px; background: var(--orange);
+      color: #fff; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px;
+    }
+    .price-card h3 { margin: 0 0 8px; font-size: 17px; color: var(--ink); }
+    .price-card .price { font-size: 32px; font-weight: 800; color: var(--ink); margin-bottom: 18px; }
+    .price-card ul { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .price-card li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-muted); }
+    .price-card li svg { width: 16px; height: 16px; stroke: var(--orange); flex-shrink: 0; }
+    .btn-flat {
+      width: 100%; padding: 13px; border-radius: 10px; border: none;
+      background: var(--ink); color: #fff; font-weight: 700; font-size: 14.5px; cursor: pointer;
+    }
+    .price-card.featured .btn-flat { background: var(--orange); }
+
+    /* signup form */
+    .signup-form {
+      max-width: 760px; margin: 0 auto; background: #fff; border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 36px;
+    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    .form-field-full { grid-column: 1 / -1; }
+    .form-field { display: flex; flex-direction: column; gap: 8px; }
+    .form-field label { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+    .form-field input, .form-field select, .form-field textarea {
+      font: inherit; font-size: 14.5px; padding: 12px 14px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--gray-bg); color: var(--text);
+      outline: none; transition: border-color .2s, background .2s;
+    }
+    .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+      border-color: var(--orange); background: #fff;
+    }
+    .form-field textarea { resize: vertical; font-family: inherit; }
+
+    /* FAQ */
+    .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item { border: 1px solid var(--border); border-radius: 14px; background: #fff; overflow: hidden; }
+    .faq-question {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 20px; background: none; border: none; font-size: 15px;
+      font-weight: 700; color: var(--ink); cursor: pointer; text-align: left;
+    }
+    .faq-question svg { width: 18px; height: 18px; flex-shrink: 0; transition: transform .25s; }
+    .faq-item.open .faq-question svg { transform: rotate(45deg); }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height .3s; }
+    .faq-item.open .faq-answer { max-height: 220px; }
+    .faq-answer p { margin: 0; padding: 0 20px 18px; font-size: 14px; line-height: 1.65; color: var(--text-muted); }
+
+    /* CTA banner */
+    .cta-banner {
+      background: linear-gradient(120deg, var(--ink) 0%, #2b2f45 100%);
+      border-radius: 24px; padding: 56px 40px; text-align: center; color: #fff;
+    }
+    .cta-banner h2 { font-size: clamp(22px,3vw,30px); margin: 0 0 10px; }
+    .cta-banner p { color: #cfd2dd; margin: 0 0 26px; font-size: 15px; }
+
+    /* footer */
+    .site-footer { background: var(--ink-soft); color: #c7c9d6; padding: 64px 0 28px; }
+    .footer-top {
+      display: grid; grid-template-columns: 1.4fr 2fr; gap: 48px;
+      padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .footer-logo-img { height: 26px; margin-bottom: 16px; }
+    .footer-brand p { font-size: 13.5px; line-height: 1.7; color: #9498a8; max-width: 320px; }
+    .footer-address {
+      margin-top: 20px; font-size: 13.5px; line-height: 1.8; color: #9498a8;
+      word-break: break-word;
+    }
+    .footer-address strong { display: block; margin-bottom: 4px; color: #e4e6ee; font-weight: 700; }
+    .footer-address a { color: #9498a8; transition: color .2s; }
+    .footer-address a:hover { color: #fff; }
+    .footer-social {
+      display: flex; align-items: center; gap: 10px; margin-top: 22px; flex-wrap: wrap;
+    }
+    .footer-social a {
+      width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(255,255,255,.16); border-radius: 50%; color: #c7c9d6;
+      transition: background .2s, color .2s, transform .2s, border-color .2s;
+    }
+    .footer-social a:hover { background: var(--orange); border-color: var(--orange); color: #fff; transform: translateY(-3px); }
+    .footer-social svg { width: 16px; height: 16px; }
+    .footer-cols { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+    .footer-cols.single { grid-template-columns: minmax(180px,220px); justify-content: flex-end; }
+    .footer-col h4 { color: #fff; font-size: 13.5px; margin: 0 0 16px; }
+    .footer-col ul { display: flex; flex-direction: column; gap: 11px; }
+    .footer-col a { font-size: 13.5px; color: #9498a8; transition: color .2s; }
+    .footer-col a:hover { color: #fff; }
+    .footer-bottom {
+      display: flex; justify-content: space-between; gap: 24px;
+      padding-top: 24px; font-size: 12.5px; color: #767a8c; flex-wrap: wrap;
+    }
+    .footer-disclosure { max-width: 640px; line-height: 1.6; }
+
+    /* ----- responsive ----- */
+    @media (max-width: 960px) {
+      .header-nav, .header-right { display: none; }
+      .nav-toggle { display: inline-flex; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .steps-grid { grid-template-columns: repeat(2,1fr); }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; gap: 30px; }
+      .footer-cols { grid-template-columns: repeat(3,1fr); }
+      .footer-cols.single { grid-template-columns: minmax(180px,220px); justify-content: flex-start; }
+    }
+
+    @media (max-width: 768px) {
+      .cta-banner { padding: 36px 24px; }
+      .cta-banner h2 { font-size: 22px; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .px { padding-left: 16px; padding-right: 16px; }
+      .section-white, .section-gray { padding: 56px 0; }
+      .page-hero { padding: 64px 0 48px; }
+      .page-hero h1 { font-size: 26px; }
+      .page-hero p { font-size: 14.5px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+      .stat-number { font-size: 22px; }
+      .stat-label { font-size: 12px; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .roll-btn.big { padding: 12px 20px; font-size: 13px; }
+      .cta-banner { padding: 28px 16px; border-radius: 18px; }
+      .cta-banner h2 { font-size: 20px; }
+      .cta-banner p { font-size: 13.5px; margin-bottom: 18px; }
+      .footer-cols { grid-template-columns: 1fr 1fr; }
+      .footer-cols.single { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; gap: 12px; }
+      .footer-disclosure { max-width: 100%; }
+      .mobile-sheet { width: 85%; max-width: 280px; padding: 24px 16px; }
+      .mobile-nav-links a { font-size: 16px; }
+      .signup-form { padding: 26px 20px; }
+      .form-grid { grid-template-columns: 1fr; gap: 16px; }
+      .footer-top { grid-template-columns: 1fr; gap: 24px; }
+      .footer-brand p { max-width: 100%; }
+      .footer-address { word-break: break-word; }
+    }
+
+    @media (max-width: 420px) {
+      .header-inner { padding: 12px 12px; }
+      .logo-img { height: 24px; }
+      .mobile-sheet { padding: 20px 14px; }
+      .mobile-nav-links a { font-size: 15px; }
+      .stats-grid { gap: 12px; }
+      .stat-number { font-size: 18px; }
+      .cta-banner { padding: 20px 12px; }
+      .cta-banner h2 { font-size: 17px; }
+    }
+    .desktop-break { display: inline; }
+    @media (max-width:640px) { .desktop-break { display: block; } }
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo-slot"><img src="./Assets/S.webp" alt="Stackly" class="logo-img"></a>
+    <nav class="header-nav">
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="compensation.html">Compensation</a>
+      <a href="stories.html">Stories</a>
+      <a href="join.html" class="active">Join</a>
+    </nav>
+    <div class="header-right">
+      <!-- Get Started → Login.html -->
+      <button class="roll-btn dark" onclick="window.location.href='Login.html';">
+        <span class="roll-text"><span class="roll-text-inner"><span>Get started</span><span>Get started</span></span></span>
+        <span class="roll-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg></span>
+      </button>
+    </div>
+    <button class="nav-toggle" id="menu-toggle" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+
+  <!-- mobile menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-backdrop" id="menu-backdrop"></div>
+    <div class="mobile-sheet">
+      <div class="mobile-nav-links">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="compensation.html">Compensation</a>
+        <a href="stories.html">Stories</a>
+        <a href="join.html">Join</a>
+      </div>
+      <!-- mobile Get started → Login.html (as requested) -->
+      <button class="roll-btn orange" onclick="window.location.href='Login.html';">
+        <span class="roll-text"><span class="roll-text-inner"><span>Get started</span><span>Get started</span></span></span>
+        <span class="roll-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- hero -->
+<section class="page-hero">
+  <div class="page-hero-content wrap px">
+    <span class="badge-pill">Join Stackly</span>
+    <h1>Join at whatever pace<br class="desktop-break"> makes sense for you.</h1>
+    <p>Pick a starter kit, get paired with a mentor, and open your personal storefront the same week — no pressure to go all-in on day one.</p>
+    <div class="hero-cta-row">
+      <!-- all other buttons → 404.html -->
+      <button class="roll-btn orange big" onclick="window.location.href='404.html';">
+        <span class="roll-text"><span class="roll-text-inner"><span>See starter kits</span><span>See starter kits</span></span></span>
+        <span class="roll-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- stats -->
+<section class="section-white" style="padding-top:56px;padding-bottom:56px;">
+  <div class="wrap px">
+    <div class="stats-grid">
+      <div><div class="stat-number">120K+</div><div class="stat-label">Active partners worldwide</div></div>
+      <div><div class="stat-number">5 days</div><div class="stat-label">Academy launch track</div></div>
+      <div><div class="stat-number">30-day</div><div class="stat-label">Unsold product buyback</div></div>
+      <div><div class="stat-number">$99</div><div class="stat-label">Starting cost to join</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- how it works -->
+<section class="section-gray" id="how">
+  <div class="wrap px">
+    <div class="badge-row"><span class="badge-pill gray-300">How it works</span></div>
+    <h2 class="section-heading tight">Four steps from curious<br>to running your own business.</h2>
+    <div class="steps-grid">
+      <div class="step-card"><span class="badge-num">1</span><h3>Join</h3><p>Pick a starter kit that fits your goals and unlock your personal partner storefront.</p></div>
+      <div class="step-card"><span class="badge-num">2</span><h3>Learn</h3><p>Work through Meridian Academy's five-day launch track alongside a real mentor.</p></div>
+      <div class="step-card"><span class="badge-num">3</span><h3>Share</h3><p>Sample the products, tell your honest story, and let your storefront handle checkout.</p></div>
+      <div class="step-card"><span class="badge-num">4</span><h3>Grow</h3><p>Sponsor new partners, mentor your team, and move up the compensation plan.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- kits -->
+<section class="section-white" id="kits">
+  <div class="wrap px">
+    <div class="badge-row"><span class="badge-pill">Starter kits</span></div>
+    <h2 class="section-heading tight">Choose your starting point.</h2>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Starter Kit</h3><div class="price">$99</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Personal storefront</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Academy launch track</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>25% retail margin</li>
+        </ul>
+        <button class="btn-flat" onclick="window.location.href='404.html';">Choose Starter</button>
+      </div>
+      <div class="price-card featured">
+        <span class="price-badge">Most popular</span>
+        <h3>Business Builder Kit</h3><div class="price">$249</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Everything in Starter</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>1:1 mentor pairing</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Team-bonus eligible day one</li>
+        </ul>
+        <button class="btn-flat" onclick="window.location.href='404.html';">Choose Business Builder</button>
+      </div>
+      <div class="price-card">
+        <h3>Elite Launch Kit</h3><div class="price">$499</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Everything in Business Builder</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3-month product credit</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Priority Ambassador mentoring</li>
+        </ul>
+        <button class="btn-flat" onclick="window.location.href='404.html';">Choose Elite</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- signup form -->
+<section class="section-gray" id="signup">
+  <div class="wrap px">
+    <div class="badge-row"><span class="badge-pill gray-300">Get started</span></div>
+    <h2 class="section-heading">Tell us a bit about you.</h2>
+    <p class="eyebrow-center" style="text-align:center;color:var(--text-muted);font-size:15.5px;max-width:560px;margin:-24px auto 44px;line-height:1.6;">A mentor will reach out within one business day to walk through kits and answer questions — no commitment required.</p>
+    <form class="signup-form" onsubmit="window.location.href='404.html'; return false;">
+      <div class="form-grid">
+        <div class="form-field"><label for="full-name">Full name</label><input type="text" id="full-name" placeholder="Jordan Reyes" required></div>
+        <div class="form-field"><label for="email">Email</label><input type="email" id="email" placeholder="jordan@email.com" required></div>
+        <div class="form-field"><label for="phone">Phone</label><input type="tel" id="phone" placeholder="(555) 123-4567"></div>
+        <div class="form-field"><label for="kit">Interested in</label>
+          <select id="kit">
+            <option>Starter Kit — $99</option>
+            <option>Business Builder Kit — $249</option>
+            <option>Elite Launch Kit — $499</option>
+            <option>Not sure yet</option>
+          </select>
+        </div>
+        <div class="form-field form-field-full">
+          <label for="message">Anything you'd like your mentor to know?</label>
+          <textarea id="message" rows="4" placeholder="I'm curious about how many hours a week this realistically takes..."></textarea>
+        </div>
+      </div>
+      <button type="submit" class="roll-btn orange big" style="margin-top:8px; width:100%; justify-content:center;">
+        <span class="roll-text"><span class="roll-text-inner"><span>Request a discovery call</span><span>Request a discovery call</span></span></span>
+        <span class="roll-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg></span>
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section-white" id="faq">
+  <div class="wrap px">
+    <div class="badge-row"><span class="badge-pill">Questions</span></div>
+    <h2 class="section-heading tight">Straight answers before you join.</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question">Is this a pyramid scheme?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <div class="faq-answer"><p>No. Stackly pays commissions on real retail sales to real customers, not on recruiting alone. Our published Income Disclosure Statement shows what typical partners actually earn.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">What's included in a starter kit?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <div class="faq-answer"><p>Every kit includes your personal storefront and the five-day Academy launch track. Business Builder and Elite add mentor pairing, product credit, and faster bonus eligibility.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">How much time does this take each week?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <div class="faq-answer"><p>Most partners start with three to five hours a week alongside their existing job, then scale up as their customer base grows.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Can I return unsold product?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <div class="faq-answer"><p>Yes. Unopened product is covered by a 30-day buyback policy at 90% of what you paid, so you're never stuck holding stock.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">Can I upgrade my kit later?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <div class="faq-answer"><p>Yes, you can upgrade to a higher kit at any time and only pay the price difference — your storefront and rank progress carry over.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- final CTA -->
+<section class="section-gray" style="padding-top:0;">
+  <div class="wrap px">
+    <div class="cta-banner">
+      <h2>Ready to build something that's actually yours?</h2>
+      <p>Talk to a real Stackly mentor before you commit to anything.</p>
+      <button class="roll-btn orange big" onclick="window.location.href='404.html';">
+        <span class="roll-text"><span class="roll-text-inner"><span>Book a discovery call</span><span>Book a discovery call</span></span></span>
+        <span class="roll-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- footer -->
+<footer class="site-footer">
+  <div class="wrap px">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html"><img src="./Assets/Stacklyimg1.webp" alt="Stackly" class="footer-logo-img"></a>
+        <p>Stackly is a network marketing company for everyday people who want to build real income through mentorship and products worth sharing.</p>
+        <div class="footer-address">
+          <strong>Reach us</strong>
+          Nagole, Hyderabad<br>
+          <a href="mailto:stackly@gmail.com">stackly@gmail.com</a><br>
+          <a href="tel:+919879876751">+91 9879876751</a>
+        </div>
+        <div class="footer-social">
+          <!-- social icons → 404.html -->
+          <a href="404.html" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg></a>
+          <a href="404.html" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 8h2V4h-2a4 4 0 0 0-4 4v2H9v4h2v6h4v-6h2.2l.8-4H15V8a1 1 0 0 1 1-1"/></svg></a>
+          <a href="404.html" aria-label="X"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4l16 16M20 4L4 20"/></svg></a>
+          <a href="404.html" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7.5" y1="10" x2="7.5" y2="17"/><circle cx="7.5" cy="7" r="1"/><path d="M11.5 17v-4.5a2.5 2.5 0 0 1 5 0V17"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-cols single">
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="compensation.html">Compensation</a></li>
+            <li><a href="stories.html">Stories</a></li>
+            <li><a href="join.html">Join</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Stackly Network. All rights reserved.</span>
+      <span class="footer-disclosure">Income Disclosure: earnings depend on individual effort, skill, and market conditions, and are not guaranteed. Most partners earn primarily through personal retail sales — full figures are in our published Income Disclosure Statement.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // mobile menu toggle
+  const menuToggle = document.getElementById('menu-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuBackdrop = document.getElementById('menu-backdrop');
+  if (menuToggle && mobileMenu) {
+    menuToggle.addEventListener('click', () => mobileMenu.classList.add('open'));
+    menuBackdrop.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    });
+  }
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const q = item.querySelector('.faq-question');
+    if (q) {
+      q.addEventListener('click', () => {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+      });
+    }
+  });
+</script>
+</body>
+</html>

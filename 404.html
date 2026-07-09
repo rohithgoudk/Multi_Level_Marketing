@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found — Strata</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* =========================================================
+       THEME — matches the white/gold brand identity
+       ========================================================= */
+    :root {
+      --bg-light: #f7f5f0;
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --card-border: rgba(201, 162, 75, 0.25);
+      --gold: #c9a24b;
+      --gold-light: #e8c876;
+      --ivory: #2d2a24;
+      --muted: #6b655a;
+      --muted-dim: #a59b8b;
+      --shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.12);
+      --font-display: 'Cinzel', serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      color: var(--ivory);
+      background: var(--bg-light);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    button { font-family: inherit; cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    /* =========================================================
+       ROOT — full page container
+       ========================================================= */
+    .error-root {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* =========================================================
+       TOP NAV BUTTONS — Back + Back to Home
+       ========================================================= */
+    .error-nav-btns {
+      position: fixed;
+      top: 28px;
+      left: 28px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .error-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid var(--card-border);
+      color: var(--muted);
+      font-size: 13.5px;
+      font-weight: 500;
+      padding: 9px 18px 9px 14px;
+      border-radius: 999px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+      transition: color .25s ease, border-color .25s ease, background .25s ease;
+    }
+    .error-back-btn:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+      background: rgba(255, 255, 255, 0.95);
+    }
+    .error-back-btn svg { flex-shrink: 0; }
+
+    /* "Back to Home" gets the gold-filled treatment so the two are visually distinct */
+    .error-back-btn.home-btn {
+      background: linear-gradient(135deg, var(--gold-light), var(--gold) 60%, #b8923a);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 16px -6px rgba(201, 162, 75, 0.5);
+    }
+    .error-back-btn.home-btn:hover {
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px -6px rgba(201, 162, 75, 0.6);
+    }
+
+    /* =========================================================
+       ERROR CARD
+       ========================================================= */
+    .error-card {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .error-card-inner {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 48px 44px 40px;
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow), 0 0 0 1px rgba(201, 162, 75, 0.06) inset;
+      text-align: center;
+    }
+    @media (max-width: 480px) {
+      .error-card-inner { padding: 32px 22px 28px; border-radius: 18px; }
+    }
+
+    /* Error Code */
+    .error-code {
+      font-family: var(--font-display);
+      font-size: 80px;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin: 0 0 8px;
+      letter-spacing: 0.04em;
+    }
+    @media (max-width: 480px) {
+      .error-code { font-size: 60px; }
+    }
+
+    .error-icon {
+      font-size: 48px;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 300;
+    }
+
+    /* Heading */
+    .error-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 600;
+      margin: 0 0 10px;
+      color: var(--ivory);
+    }
+    @media (max-width: 480px) {
+      .error-title { font-size: 21px; }
+    }
+
+    .error-subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      margin: 0 0 8px;
+      line-height: 1.6;
+    }
+
+    /* Divider */
+    .error-divider {
+      width: 60px;
+      height: 2px;
+      background: var(--gold);
+      margin: 18px auto 20px;
+      border-radius: 999px;
+      opacity: 0.5;
+    }
+
+    /* Quick Links — MLM style navigation */
+    .error-links {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 24px 0 28px;
+      text-align: left;
+    }
+    @media (max-width: 420px) {
+      .error-links { grid-template-columns: 1fr; }
+    }
+
+    .error-link-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--bg-light);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      transition: border-color .2s ease, background .2s ease, transform .2s ease;
+      color: var(--ivory);
+      font-weight: 500;
+      font-size: 13.5px;
+    }
+    .error-link-item:hover {
+      border-color: var(--gold);
+      background: rgba(201, 162, 75, 0.06);
+      transform: translateY(-2px);
+    }
+    .error-link-item span {
+      font-size: 18px;
+      flex-shrink: 0;
+      color: var(--gold);
+    }
+    .error-link-item small {
+      display: block;
+      font-weight: 400;
+      font-size: 11px;
+      color: var(--muted-dim);
+      margin-top: 2px;
+    }
+
+    /* Buttons */
+    .error-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .error-btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold) 60%, #b8923a);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 14px 28px;
+      transition: transform .2s ease, box-shadow .2s ease;
+      text-decoration: none;
+    }
+    .error-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px -10px rgba(201, 162, 75, 0.45);
+    }
+
+    .error-btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 12px 28px;
+      transition: border-color .2s ease, color .2s ease, background .2s ease;
+      text-decoration: none;
+    }
+    .error-btn-secondary:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(201, 162, 75, 0.04);
+    }
+
+    /* Network status badge — MLM theme */
+    .error-badge {
+      display: inline-block;
+      background: rgba(201, 162, 75, 0.1);
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      padding: 4px 16px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 18px;
+      letter-spacing: 0.04em;
+    }
+    .error-badge strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* =========================================================
+       DECORATIVE SPLIT — visible on large screens
+       ========================================================= */
+    .error-decoration {
+      display: none;
+    }
+
+    @media (min-width: 1024px) {
+      .error-root {
+        max-width: 1200px;
+        padding: 40px;
+        gap: 60px;
+        justify-content: center;
+      }
+      .error-decoration {
+        display: block;
+        flex: 1;
+        max-width: 480px;
+        padding: 20px;
+      }
+      .error-card {
+        max-width: 480px;
+        flex-shrink: 0;
+      }
+      .error-decoration-inner {
+        background: linear-gradient(145deg, #f5edda, #faf7f0);
+        border-radius: 32px;
+        padding: 48px 40px;
+        border: 1px solid var(--card-border);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        box-shadow: var(--shadow);
+      }
+      .error-decoration h2 {
+        font-family: var(--font-display);
+        font-size: 26px;
+        font-weight: 600;
+        color: var(--ivory);
+        margin: 0 0 12px;
+      }
+      .error-decoration p {
+        font-size: 15px;
+        line-height: 1.7;
+        color: var(--muted);
+        margin: 0 0 24px;
+      }
+      .error-decoration-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        width: 100%;
+      }
+      .error-decoration-stat {
+        background: rgba(255, 255, 255, 0.5);
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(201, 162, 75, 0.1);
+        text-align: center;
+      }
+      .error-decoration-stat .number {
+        font-family: var(--font-display);
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--gold);
+        display: block;
+      }
+      .error-decoration-stat .label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+        display: block;
+      }
+      .error-decoration-icon {
+        font-size: 42px;
+        margin-bottom: 16px;
+        display: block;
+        color: var(--gold);
+        font-weight: 300;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      .error-root {
+        padding: 16px;
+        min-height: 100vh;
+      }
+      .error-card {
+        max-width: 440px;
+      }
+      .error-nav-btns {
+        top: 16px;
+        left: 16px;
+      }
+      .error-back-btn {
+        font-size: 12px;
+        padding: 6px 14px 6px 10px;
+      }
+      .error-back-btn svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .error-root { padding: 8px; }
+      .error-card-inner { padding: 28px 18px 24px; }
+      .error-code { font-size: 52px; }
+      .error-icon { font-size: 36px; }
+      .error-title { font-size: 19px; }
+      .error-subtitle { font-size: 13px; }
+      .error-links { gap: 8px; }
+      .error-link-item { padding: 10px 12px; font-size: 12px; }
+      .error-btn-primary { font-size: 13px; padding: 12px 20px; }
+      .error-btn-secondary { font-size: 12px; padding: 10px 20px; }
+      .error-nav-btns { top: 12px; left: 12px; gap: 8px; }
+      .error-back-btn { padding: 5px 12px 5px 8px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="error-root">
+
+  <!-- Top nav: Back (browser history) + Back to Home (index.html) -->
+  <div class="error-nav-btns">
+    <button class="error-back-btn" id="back-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5" />
+        <path d="M12 19l-7-7 7-7" />
+      </svg>
+      Back
+    </button>
+
+    <a href="index.html" class="error-back-btn home-btn" id="home-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 11l9-8 9 8" />
+        <path d="M5 10v10h14V10" />
+      </svg>
+      Back to Home
+    </a>
+  </div>
+
+  <!-- Error Card -->
+  <div class="error-card">
+    <div class="error-card-inner">
+
+      <span class="error-icon">◆</span>
+      <div class="error-code">404</div>
+
+      <h1 class="error-title">Page Not Found</h1>
+      <p class="error-subtitle">
+        The page you're looking for seems to have been misplaced.
+        It might have been moved, renamed, or never existed.
+      </p>
+
+      <div class="error-divider"></div>
+
+      <!-- Quick Navigation -->
+      <div class="error-links">
+        <a href="products.html" class="error-link-item">
+          <span>▦</span>
+          Products
+          <small>Browse the catalog</small>
+        </a>
+        <a href="compensation.html" class="error-link-item">
+          <span>🏛️</span>
+          Compensation
+          <small>See the rank ladder</small>
+        </a>
+        <a href="stories.html" class="error-link-item">
+          <span>📊</span>
+          Stories
+          <small>Real partner timelines</small>
+        </a>
+        <a href="join.html" class="error-link-item">
+          <span>⚙️</span>
+          Join
+          <small>Choose a starter kit</small>
+        </a>
+      </div>
+
+      <div class="error-actions">
+        <a href="index.html" class="error-btn-primary">
+          Return to Homepage →
+        </a>
+        <a href="index.html" class="error-btn-secondary">
+          Sign in again
+        </a>
+      </div>
+
+      <div class="error-badge">
+        Network Status: <strong>● Online</strong> · All systems operational
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Decorative Section (visible on large screens) -->
+  <div class="error-decoration">
+    <div class="error-decoration-inner">
+      <div class="error-decoration-icon">■</div>
+      <h2>Lost in the Network?</h2>
+      <p>Even the best explorers take a wrong turn sometimes. Here are some quick stats to get you back on track.</p>
+      <div class="error-decoration-stats">
+        <div class="error-decoration-stat">
+          <span class="number">120K+</span>
+          <span class="label">Active Partners</span>
+        </div>
+        <div class="error-decoration-stat">
+          <span class="number">32</span>
+          <span class="label">Products</span>
+        </div>
+        <div class="error-decoration-stat">
+          <span class="number">42</span>
+          <span class="label">Countries</span>
+        </div>
+        <div class="error-decoration-stat">
+          <span class="number">$186M</span>
+          <span class="label">Paid in 2025</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.getElementById('back-btn').addEventListener('click', function () {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = 'index.html';
+    }
+  });
+</script>
+
+</body>
+</html>

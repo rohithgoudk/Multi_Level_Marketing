@@ -1,0 +1,1010 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meridian Partner Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0d0d14;
+      color: #f5f5f7;
+      -webkit-font-smoothing: antialiased;
+    }
+    :root {
+      --bg: #0d0d14;
+      --surface: #15151f;
+      --surface-2: #1b1b29;
+      --border: rgba(255,255,255,0.08);
+      --text: #f5f5f7;
+      --text-dim: rgba(245,245,247,0.6);
+      --text-dimmer: rgba(245,245,247,0.45);
+      --accent: #D9A441;
+      --accent-soft: rgba(217,164,65,0.14);
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --blue-gray: #8B9DAF;
+    }
+    .dashboard-root { display: flex; min-height: 100vh; width: 100%; max-width: 100vw; }
+    .sidebar-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      z-index: 40; display: none;
+    }
+    .sidebar-overlay.show { display: block; }
+    .sidebar {
+      width: 260px; flex-shrink: 0; background: var(--surface);
+      border-right: 1px solid var(--border); display: flex; flex-direction: column;
+      padding: 20px 16px 16px; position: fixed; left: 0; top: 0;
+      height: 100vh; overflow-y: auto; z-index: 30;
+    }
+    .sidebar-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 22px; padding: 0 4px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand-logo-slot { height: 34px; display: flex; align-items: center; flex-shrink: 0; }
+    .brand-logo-img {
+      height: 100%; width: auto; max-width: 170px;
+      object-fit: contain; display: block;
+    }
+    .brand-logo-fallback {
+      width: 34px; height: 34px; border-radius: 10px;
+      border: 1px dashed rgba(217,164,65,0.45); color: var(--accent);
+      font-size: 15px; align-items: center; justify-content: center; display: none;
+    }
+    .close-btn {
+      display: none; background: none; border: none; color: var(--text-dim);
+      font-size: 18px; padding: 4px 8px;
+    }
+    .sidebar-section-label {
+      font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em;
+      color: var(--text-dimmer); text-transform: uppercase;
+      margin: 14px 8px 8px;
+    }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 2px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      background: none; border: none; width: 100%;
+      padding: 10px 12px; border-radius: 10px;
+      color: var(--text-dim); font-size: 13.5px; font-weight: 500;
+      text-align: left; transition: background .2s ease, color .2s ease;
+      position: relative;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+    .nav-item.nav-active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    .nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+    .nav-badge { margin-left: auto; background: var(--accent); color: #1a140b; font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 999px; }
+    .logout-full-btn {
+      margin-top: auto; width: 100%; padding: 11px; border-radius: 10px;
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+      color: #fca5a5; font-size: 13px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background .2s ease; text-decoration: none;
+    }
+    .logout-full-btn:hover { background: rgba(239,68,68,0.18); }
+    .main-content {
+      flex: 1; min-width: 0; max-width: 100%; display: flex; flex-direction: column;
+      margin-left: 260px;
+    }
+    .topbar {
+      position: sticky;
+      top: 0; z-index: 25;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; padding: 16px 28px;
+      background: rgba(13,13,20,0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; min-width: 0; flex: 1 1 auto; }
+    .hamburger {
+      display: none; flex-direction: column; justify-content: center; gap: 4px;
+      width: 38px; height: 38px; border-radius: 9px;
+      background: var(--surface-2); border: 1px solid var(--border);
+      align-items: center; flex-shrink: 0;
+    }
+    .hamburger span { width: 16px; height: 2px; background: var(--text); border-radius: 2px; }
+    .page-title { min-width: 0; }
+    .page-title h1 { font-size: 19px; font-weight: 700; margin: 0; }
+    .page-title p { font-size: 12.5px; color: var(--text-dim); margin: 3px 0 0; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px 12px;
+      min-width: 0;
+    }
+    .search-box input {
+      background: none; border: none; outline: none; color: var(--text);
+      font-size: 13px; width: 190px; max-width: 100%; min-width: 0;
+    }
+    .search-box input::placeholder { color: var(--text-dimmer); }
+    .search-icon { font-size: 13px; opacity: 0.7; }
+    .icon-btn {
+      position: relative; width: 38px; height: 38px; border-radius: 10px;
+      background: var(--surface-2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; font-size: 15px;
+      flex-shrink: 0;
+    }
+    .notif-dot {
+      position: absolute; top: 7px; right: 8px; width: 7px; height: 7px;
+      border-radius: 50%; background: var(--red); border: 1.5px solid var(--surface);
+    }
+    .content-area { padding: 24px 28px 48px; min-width: 0; max-width: 100%; overflow-x: hidden; }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px 18px 16px; min-width: 0;
+      transition: border-color .2s ease, transform .2s ease;
+    }
+    .stat-card:hover { border-color: rgba(217,164,65,0.35); transform: translateY(-2px); }
+    .stat-accent { border-color: rgba(217,164,65,0.4); background: linear-gradient(160deg, rgba(217,164,65,0.07), var(--surface) 60%); }
+    .stat-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .stat-icon { font-size: 18px; }
+    .stat-delta { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+    .stat-delta.up { color: #86efac; background: rgba(34,197,94,0.14); }
+    .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; }
+    .stat-label { font-size: 12.5px; color: var(--text-dim); margin-top: 4px; }
+    .stat-bar { height: 5px; background: rgba(255,255,255,0.06); border-radius: 999px; margin-top: 12px; overflow: hidden; }
+    .stat-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #e8c9a8); border-radius: 999px; transition: width 1s ease; }
+    .mid-grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 16px; margin-bottom: 16px; align-items: start; }
+    .bottom-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-items: start; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px; margin-bottom: 16px; min-width: 0;
+    }
+    .card-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .card-title { font-size: 15px; font-weight: 700; margin: 0; }
+    .card-sub { font-size: 12px; color: var(--text-dim); margin: 3px 0 0; }
+    .table-wrapper { overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch; }
+    .excavations-table { width: 100%; border-collapse: collapse; min-width: 640px; }
+    .excavations-table th {
+      text-align: left; font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-dimmer);
+      padding: 0 10px 10px; border-bottom: 1px solid var(--border);
+    }
+    .excavations-table td { padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+    .excavations-table tr:last-child td { border-bottom: none; }
+    .excavations-table tbody tr { transition: background .15s ease; }
+    .excavations-table tbody tr:hover { background: rgba(255,255,255,0.025); }
+    .t-name { font-weight: 600; font-size: 13px; }
+    .t-sub { font-size: 11.5px; color: var(--text-dimmer); margin-top: 2px; }
+    .type-col { color: var(--text-dim); }
+    .date-col { color: var(--text-dim); white-space: nowrap; }
+    .budget-col { font-weight: 700; white-space: nowrap; }
+    .region-tag {
+      font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+      border: 1px solid; white-space: nowrap;
+    }
+    .status-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+    .status-active { background: rgba(34,197,94,0.14); color: #86efac; }
+    .status-field { background: rgba(245,158,11,0.14); color: #fcd34d; }
+    .status-complete { background: rgba(139,157,175,0.18); color: #c7d3dc; }
+    .status-review { background: rgba(217,164,65,0.16); color: #e8c9a8; }
+    .progress-wrap { display: flex; align-items: center; gap: 8px; min-width: 100px; }
+    .progress-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.07); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #e8c9a8); border-radius: 999px; }
+    .progress-pct { font-size: 11.5px; color: var(--text-dim); flex-shrink: 0; }
+    .activity-list { display: flex; flex-direction: column; gap: 4px; padding: 0; margin: 0; }
+    .activity-item {
+      display: flex; align-items: flex-start; gap: 12px; padding: 12px 6px; border-radius: 10px;
+      transition: background .15s ease;
+    }
+    .activity-item:hover { background: rgba(255,255,255,0.03); }
+    .act-icon { font-size: 17px; flex-shrink: 0; line-height: 1.4; }
+    .act-body { flex: 1; min-width: 0; }
+    .act-text { font-size: 13px; margin: 0; line-height: 1.5; word-wrap: break-word; }
+    .act-time { font-size: 11.5px; color: var(--text-dimmer); margin-top: 4px; display: block; }
+    .team-list { display: flex; flex-direction: column; gap: 4px; padding: 0; margin: 0; }
+    .team-item {
+      display: flex; align-items: center; gap: 12px; padding: 10px 6px; border-radius: 10px;
+      transition: background .15s ease;
+    }
+    .team-item:hover { background: rgba(255,255,255,0.03); }
+    .member-avatar {
+      position: relative; width: 38px; height: 38px; border-radius: 50%;
+      background: var(--surface-2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12.5px; font-weight: 700; color: var(--accent); flex-shrink: 0;
+    }
+    .online-dot {
+      position: absolute; bottom: -1px; right: -1px; width: 10px; height: 10px;
+      border-radius: 50%; border: 2px solid var(--surface);
+    }
+    .dot-active { background: var(--green); }
+    .dot-away { background: var(--amber); }
+    .member-info { flex: 1; min-width: 0; }
+    .member-name { font-size: 13px; font-weight: 600; }
+    .member-role { font-size: 11.5px; color: var(--text-dimmer); margin-top: 1px; }
+    .member-projects { text-align: center; flex-shrink: 0; }
+    .proj-count { display: block; font-size: 14px; font-weight: 800; color: var(--accent); }
+    .proj-label { display: block; font-size: 10px; color: var(--text-dimmer); }
+    .milestone-list { display: flex; flex-direction: column; padding: 0; margin: 0; }
+    .milestone-item {
+      display: flex; align-items: flex-start; gap: 12px; padding: 12px 6px; border-radius: 10px;
+      position: relative; transition: background .15s ease;
+    }
+    .milestone-item:hover { background: rgba(255,255,255,0.03); }
+    .ms-date { width: 34px; flex-shrink: 0; text-align: center; }
+    .ms-date span { display: block; }
+    .ms-date span:first-child { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; }
+    .ms-date span:last-child { font-size: 16px; font-weight: 800; }
+    .ms-line { width: 2px; align-self: stretch; display: flex; justify-content: center; flex-shrink: 0; }
+    .ms-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-top: 4px; }
+    .ms-body { flex: 1; min-width: 0; }
+    .ms-event { font-size: 13px; font-weight: 600; }
+    .ms-project { font-size: 11.5px; color: var(--text-dimmer); margin-top: 2px; }
+    .ms-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: rgba(239,68,68,0.16); color: #fca5a5; flex-shrink: 0; align-self: flex-start; }
+    .ms-done-tag { background: rgba(34,197,94,0.16); color: #86efac; }
+    .ms-done .ms-event { text-decoration: line-through; color: var(--text-dimmer); }
+    .donut-chart { display: flex; justify-content: center; margin: 6px 0 14px; }
+    .donut-svg { width: 150px; height: 150px; max-width: 100%; }
+    .donut-num { font-size: 22px; font-weight: 800; fill: var(--text); }
+    .donut-label { font-size: 9px; fill: var(--text-dimmer); text-transform: uppercase; letter-spacing: 0.06em; }
+    .legend-list { display: flex; flex-direction: column; gap: 9px; padding: 0; margin: 0; }
+    .legend-item { display: flex; align-items: center; gap: 9px; padding: 4px 6px; border-radius: 8px; }
+    .legend-item:hover { background: rgba(255,255,255,0.03); }
+    .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .legend-label { flex: 1; font-size: 12.5px; color: var(--text-dim); }
+    .legend-count { font-size: 12.5px; font-weight: 700; }
+    .btn-outline {
+      background: none; border: 1px solid var(--border); color: var(--text-dim);
+      padding: 7px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+      transition: border-color .2s ease, color .2s ease;
+    }
+    .btn-outline:hover { border-color: rgba(255,255,255,0.25); color: var(--text); }
+    .btn-active { border-color: var(--accent) !important; color: var(--accent) !important; }
+    .team-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+    .team-card {
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px;
+      padding: 16px; cursor: pointer; min-width: 0; transition: border-color .2s ease, transform .2s ease;
+    }
+    .research-card {
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px; cursor: pointer; min-width: 0; transition: border-color .2s ease, transform .2s ease;
+    }
+    .schedule-row {
+      display: flex; align-items: center; gap: 14px; padding: 14px 10px; border-radius: 10px;
+      cursor: pointer; transition: background .15s ease, transform .15s ease;
+    }
+    .evt-tag { font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 999px; flex-shrink: 0; }
+    .pub-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+    .pub-card {
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px;
+      padding: 18px; cursor: pointer; min-width: 0; transition: border-color .2s ease, transform .2s ease;
+    }
+    .toggle-switch {
+      width: 42px; height: 24px; border-radius: 999px; cursor: pointer;
+      position: relative; flex-shrink: 0; transition: background .3s ease;
+    }
+    .toggle-knob {
+      position: absolute; top: 3px; width: 18px; height: 18px; border-radius: 50%;
+      background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.3); transition: left .3s ease;
+    }
+    select.pref-select {
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+      border-radius: 8px; padding: 7px 12px; font-size: 13px; outline: none;
+    }
+    @media (max-width: 1200px) {
+      .mid-grid { grid-template-columns: 1fr; }
+      .bottom-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 1024px) {
+      .sidebar {
+        z-index: 50;
+        transform: translateX(-100%); transition: transform .3s ease;
+        will-change: transform;
+      }
+      .sidebar.sidebar-open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .close-btn { display: block; }
+      .hamburger { display: flex; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .team-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .pub-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 720px) {
+      .bottom-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .content-area { padding: 18px 16px 40px; }
+      .topbar { padding: 14px 16px; }
+      .search-box input { width: 120px; }
+      .team-grid { grid-template-columns: 1fr; }
+      .pub-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat-card { padding: 14px; }
+      .stat-value { font-size: 22px; }
+      .card { padding: 14px; }
+      .page-title h1 { font-size: 17px; }
+    }
+    @media (max-width: 400px) {
+      .search-box { display: none; }
+      .topbar { padding: 12px 12px; gap: 8px; }
+      .content-area { padding: 14px 12px 32px; }
+      .stat-card { padding: 12px; }
+      .sidebar { width: 84%; max-width: 300px; }
+    }
+  </style>
+</head>
+<body>
+<div class="dashboard-root">
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <span class="brand-logo-slot">
+          <img id="brand-logo-img" src="./Assets/Logo.webp" alt="Company logo" class="brand-logo-img"
+               onerror="this.onerror=null;this.style.display='none';document.getElementById('brand-logo-fallback').style.display='flex';">
+          <span id="brand-logo-fallback" class="brand-logo-fallback">🖼️</span>
+        </span>
+      </div>
+      <button class="close-btn" id="close-sidebar-btn" aria-label="Close sidebar">✕</button>
+    </div>
+    <div class="sidebar-section-label">MAIN MENU</div>
+    <nav class="sidebar-nav" id="nav-main"></nav>
+    <div class="sidebar-section-label">MANAGEMENT</div>
+    <nav class="sidebar-nav" id="nav-management"></nav>
+    <a href="Login.html" class="logout-full-btn" id="logout-btn">↪ Logout</a>
+  </aside>
+  <main class="main-content">
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburger-btn" aria-label="Open menu"><span></span><span></span><span></span></button>
+        <div class="page-title">
+          <h1 id="page-title-text">Dashboard</h1>
+          <p id="page-sub-text"></p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input placeholder="Search regions, products, leaders…">
+        </div>
+        <button class="icon-btn" id="notif-btn" aria-label="Notifications">🔔<span class="notif-dot"></span></button>
+      </div>
+    </header>
+    <div class="content-area" id="content-area"></div>
+  </main>
+</div>
+<script>
+  const regionAccents = {
+    "North America": "#D9A441",
+    "Europe": "#8B9DAF",
+    "Latin America": "#5D8A5E",
+    "Middle East": "#C49A6C",
+    "South Asia": "#B8860B"
+  };
+  const marketLaunches = [
+    { id: 1, name: "Downtown Flagship Launch", region: "North America", site: "Chicago, IL", type: "Retail Hub", status: "Active", progress: 72, endDate: "Dec 2025", budget: "$450,000", director: "Dana Whitfield" },
+    { id: 2, name: "Athens Market Expansion", region: "Europe", site: "Athens, Greece", type: "Distribution Center", status: "Ramping Up", progress: 38, endDate: "Aug 2025", budget: "$320,000", director: "Nikos Papadopoulos" },
+    { id: 3, name: "Guatemala City Rollout", region: "Latin America", site: "Guatemala City", type: "Regional Office", status: "Completed", progress: 100, endDate: "Mar 2025", budget: "$580,000", director: "Elena Rodriguez" },
+    { id: 4, name: "Basra Distribution Launch", region: "Middle East", site: "Basra, Iraq", type: "Warehouse", status: "Active", progress: 55, endDate: "Nov 2025", budget: "$390,000", director: "James O'Neill" },
+    { id: 5, name: "Karachi Market Survey", region: "South Asia", site: "Karachi, Pakistan", type: "Urban Rollout", status: "Review", progress: 89, endDate: "Jul 2025", budget: "$275,000", director: "Priya Sharma" },
+    { id: 6, name: "Naples Retail Expansion", region: "Europe", site: "Naples, Italy", type: "Urban Rollout", status: "Active", progress: 61, endDate: "Oct 2025", budget: "$520,000", director: "Marco Ferretti" },
+    { id: 7, name: "Cusco Regional Office", region: "Latin America", site: "Cusco, Peru", type: "Regional Office", status: "Ramping Up", progress: 45, endDate: "Sep 2025", budget: "$310,000", director: "Ana Flores" },
+    { id: 8, name: "Berlin Pop-up Hub", region: "Europe", site: "Berlin, Germany", type: "Pop-up Retail", status: "Active", progress: 28, endDate: "Nov 2025", budget: "$180,000", director: "Nikos Papadopoulos" }
+  ];
+  const teamLeaders = [
+    { name: "Dana Whitfield", role: "Regional Director — North America", experience: 14, avatar: "DW", status: "active", projects: 3, speciality: "Retail Growth & Recruitment", email: "d.whitfield@meridian.com" },
+    { name: "Nikos Papadopoulos", role: "Regional Director — Europe", experience: 11, avatar: "NP", status: "active", projects: 2, speciality: "Team Building & Events", email: "n.papadopoulos@meridian.com" },
+    { name: "Elena Rodriguez", role: "Market Specialist — Latin America", experience: 9, avatar: "ER", status: "away", projects: 2, speciality: "New Partner Onboarding", email: "e.rodriguez@meridian.com" },
+    { name: "James O'Neill", role: "Distribution Expert — Middle East", experience: 16, avatar: "JO", status: "active", projects: 2, speciality: "Logistics & Supply Chain", email: "j.oneill@meridian.com" },
+    { name: "Priya Sharma", role: "Market Specialist — South Asia", experience: 8, avatar: "PS", status: "active", projects: 1, speciality: "Digital Recruiting", email: "p.sharma@meridian.com" },
+    { name: "Marco Ferretti", role: "Regional Director — Southern Europe", experience: 12, avatar: "MF", status: "active", projects: 1, speciality: "Retail Partnerships", email: "m.ferretti@meridian.com" },
+    { name: "Ana Flores", role: "Market Specialist — Latin America", experience: 7, avatar: "AF", status: "active", projects: 1, speciality: "Community Events & Retention", email: "a.flores@meridian.com" }
+  ];
+  const productCatalog = [
+    { id: "SKU-001", name: "Radiance Daily Serum", region: "North America", category: "Skincare", date: "Jan 2023", stock: "Excellent", status: "Bestseller" },
+    { id: "SKU-002", name: "Restore Night Cream", region: "Europe", category: "Skincare", date: "Jun 2023", stock: "Good", status: "Active" },
+    { id: "SKU-003", name: "Pure Collagen Blend", region: "Latin America", category: "Wellness", date: "Mar 2024", stock: "Low Stock", status: "Reformulated" },
+    { id: "SKU-004", name: "Everyday Glow Set", region: "Middle East", category: "Bundle", date: "Sep 2023", stock: "Excellent", status: "Bestseller" },
+    { id: "SKU-005", name: "Radiant Hair Elixir", region: "South Asia", category: "Haircare", date: "Nov 2024", stock: "Good", status: "Active" },
+    { id: "SKU-006", name: "Citrus Detox Tea", region: "Europe", category: "Wellness", date: "Feb 2022", stock: "Good", status: "Active" },
+    { id: "SKU-007", name: "Gold Radiance Mask", region: "North America", category: "Skincare", date: "Dec 2024", stock: "Excellent", status: "Featured" },
+    { id: "SKU-008", name: "Renewal Body Oil", region: "Latin America", category: "Skincare", date: "Jul 2024", stock: "Good", status: "Active" }
+  ];
+  const fieldReports = [
+    { title: "Retail Conversion Trends in North American Flagship Stores", authors: "Whitfield, D. et al.", journal: "Meridian Market Insights", year: 2025, status: "Published", reads: 12 },
+    { title: "Supply Chain Resilience in Middle East Distribution", authors: "O'Neill, J., Al-Rashid, M.", journal: "Meridian Logistics Review", year: 2025, status: "Published", reads: 7 },
+    { title: "Retention of New Partners Onboarded via Digital Channels", authors: "Whitfield, D. et al.", journal: "Journal of Direct Selling Research", year: 2025, status: "In Review", reads: 0 },
+    { title: "Digital Recruiting Funnels in South Asia: A Data-Driven Study", authors: "Sharma, P., Khan, R.", journal: "Meridian Research Quarterly", year: 2024, status: "Published", reads: 31 },
+    { title: "Store Traffic Patterns Across Latin American Regional Offices", authors: "Rodriguez, E., Flores, A.", journal: "Latin America Retail Quarterly", year: 2024, status: "Published", reads: 44 },
+    { title: "Naples Retail Expansion: Early Indicators and Community Response", authors: "Ferretti, M. et al.", journal: "European Market Papers", year: 2025, status: "In Draft", reads: 0 }
+  ];
+  const scheduleEvents = [
+    { date: "Jun 21", event: "North America flagship — Phase 2 rollout begins", site: "Chicago, IL", type: "urgent" },
+    { date: "Jun 25", event: "Athens distribution center — compliance audit", site: "Athens, Greece", type: "normal" },
+    { date: "Jul 2", event: "Basra warehouse — inventory cataloguing session", site: "Basra, Iraq", type: "normal" },
+    { date: "Jul 10", event: "Team debrief: Guatemala rollout final report review", site: "Virtual", type: "meeting" },
+    { date: "Jul 18", event: "Naples — customer survey rollout", site: "Naples, Italy", type: "normal" },
+    { date: "Aug 5", event: "Karachi — digital campaign final review", site: "Karachi, Pakistan", type: "normal" },
+    { date: "Aug 14", event: "Annual regional directors' summit", site: "London, UK", type: "meeting" },
+    { date: "Sep 1", event: "Cusco regional office — operations resume", site: "Cusco, Peru", type: "normal" },
+    { date: "Oct 15", event: "Naples — phase 1 performance report deadline", site: "Naples, Italy", type: "urgent" }
+  ];
+  const budgetData = [
+    { site: "Downtown Flagship (Chicago)", allocated: 450000, spent: 284000, region: "North America" },
+    { site: "Athens Market Expansion", allocated: 320000, spent: 108000, region: "Europe" },
+    { site: "Guatemala City Rollout", allocated: 580000, spent: 580000, region: "Latin America" },
+    { site: "Basra Distribution Launch", allocated: 390000, spent: 201000, region: "Middle East" },
+    { site: "Karachi Market Survey", allocated: 275000, spent: 241000, region: "South Asia" },
+    { site: "Naples Retail Expansion", allocated: 520000, spent: 298000, region: "Europe" },
+    { site: "Cusco Regional Office", allocated: 310000, spent: 132000, region: "Latin America" }
+  ];
+  const trainingLibrary = [
+    { title: "Meridian Annual Partner Review 2024", type: "Annual Report", year: 2024, pages: 128, downloads: 3841 },
+    { title: "Handbook of Retail Selling Methods", type: "Technical Manual", year: 2023, pages: 264, downloads: 7120 },
+    { title: "Rank Advancement Playbook: A Comparative Study", type: "Guide", year: 2024, pages: 312, downloads: 2450 },
+    { title: "Digital Recruiting: Social Selling in Practice", type: "Field Guide", year: 2025, pages: 96, downloads: 5633 },
+    { title: "Compliance & Ethics in Direct Sales", type: "Compliance Guide", year: 2023, pages: 180, downloads: 1920 }
+  ];
+  const liveFeed = [
+    { icon: "🏆", text: "A partner in North America reached Ambassador rank this week", time: "2h ago", type: "milestone" },
+    { icon: "📈", text: "Record retail sales week reported across the Europe region", time: "4h ago", type: "performance" },
+    { icon: "✅", text: "Guatemala City rollout completed — final performance report published", time: "Yesterday", type: "complete" },
+    { icon: "⚠️", text: "Weather delay at Athens distribution center — deliveries paused", time: "Yesterday", type: "alert" },
+    { icon: "🔬", text: "Customer survey data reveals new buying patterns across Europe", time: "2d ago", type: "update" },
+    { icon: "🎯", text: "Q3 recruiting targets exceeded across three regions", time: "3d ago", type: "milestone" },
+    { icon: "📦", text: "New product bundle launched across the Everyday Glow line", time: "4d ago", type: "update" }
+  ];
+  const navItems = [
+    { icon: "▦", label: "Dashboard", id: "dashboard" },
+    { icon: "🏬", label: "Market Launches", id: "launches" },
+    { icon: "🛡", label: "Team Leaders", id: "teams" },
+    { icon: "📦", label: "Product Catalog", id: "products" },
+    { icon: "📊", label: "Field Reports", id: "reports" },
+    { icon: "🗓️", label: "Schedule", id: "schedule" },
+    { icon: "💰", label: "Budget", id: "budget" },
+    { icon: "📚", label: "Training Library", id: "training" },
+    { icon: "⚙️", label: "Settings", id: "settings" }
+  ];
+  const statusColors = { "Active": "status-active", "Ramping Up": "status-field", "Completed": "status-complete", "Review": "status-review" };
+  const stockColor = { "Excellent": "#22c55e", "Good": "#f59e0b", "Low Stock": "#ef4444" };
+  const reportStatusColor = { "Published": "#22c55e", "In Review": "#f59e0b", "In Draft": "#8B9DAF" };
+  const scheduleTypeColor = { urgent: "#ef4444", normal: "#D9A441", meeting: "#8B9DAF" };
+  const pageMap = {
+    dashboard:  { title: "Dashboard", sub: "" },
+    launches:   { title: "Market Launches", sub: "All active and completed regional launches." },
+    teams:      { title: "Team Leaders", sub: "Manage your regional directors and specialists." },
+    products:   { title: "Product Catalog", sub: "Registry of all catalogued products." },
+    reports:    { title: "Field Reports", sub: "Performance studies and internal research." },
+    schedule:   { title: "Schedule", sub: "Deadlines, launch dates, and upcoming events." },
+    budget:     { title: "Budget", sub: "Incentive fund allocation and spend tracking." },
+    training:   { title: "Training Library", sub: "Playbooks, guides, and annual reports." },
+    settings:   { title: "Settings", sub: "Account preferences and configuration." }
+  };
+
+  let state = {
+    activeNav: "dashboard",
+    launchFilter: "All",
+    productSearch: "",
+    settings: { notifications: true, emailDigest: false, darkMode: true, language: "English" }
+  };
+
+  function fmt(n) { return "$" + n.toLocaleString(); }
+  function go404() { window.location.href = "/404"; }
+
+  function regionTag(region) {
+    const c = regionAccents[region] || "#D9A441";
+    return `<span class="region-tag" style="color:${c};border-color:${c};background:${c}1f;">${region}</span>`;
+  }
+
+  function renderDashboard() {
+    const stats = [
+      { icon: "🏬", delta: "+3 this month", value: "12", label: "Active Market Launches", bar: 72, accent: true },
+      { icon: "📦", delta: "+42 this week", value: "2,847", label: "Products Catalogued", bar: 64 },
+      { icon: "💰", delta: "On track", value: "$4.2M", label: "Incentive Fund", bar: 88 },
+      { icon: "🌍", delta: "+2 this quarter", value: "18", label: "Active Regions", bar: 90 }
+    ];
+    const statsHtml = stats.map(s =>
+      `<div class="stat-card ${s.accent ? "stat-accent" : ""}" style="cursor:pointer" onclick="go404()">
+        <div class="stat-top"><span class="stat-icon">${s.icon}</span><span class="stat-delta up">${s.delta}</span></div>
+        <div class="stat-value">${s.value}</div><div class="stat-label">${s.label}</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:${s.bar}%"></div></div>
+      </div>`
+    ).join("");
+
+    const rows = marketLaunches.slice(0, 5).map(t =>
+      `<tr style="cursor:pointer" onclick="go404()">
+        <td><div class="t-name">${t.name}</div><div class="t-sub">${t.site} · ${t.director}</div></td>
+        <td>${regionTag(t.region)}</td>
+        <td class="type-col">${t.type}</td>
+        <td><span class="status-badge ${statusColors[t.status]}">${t.status}</span></td>
+        <td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:${t.progress}%"></div></div><span class="progress-pct">${t.progress}%</span></div></td>
+        <td class="date-col">${t.endDate}</td>
+        <td class="budget-col">${t.budget}</td>
+      </tr>`
+    ).join("");
+
+    const feedHtml = liveFeed.map(a =>
+      `<li class="activity-item" style="cursor:pointer" onclick="go404()">
+        <span class="act-icon">${a.icon}</span>
+        <div class="act-body"><p class="act-text">${a.text}</p><span class="act-time">${a.time}</span></div>
+      </li>`
+    ).join("");
+
+    const teamHtml = teamLeaders.slice(0, 5).map(m =>
+      `<li class="team-item" style="cursor:pointer" onclick="go404()">
+        <div class="member-avatar">${m.avatar}<span class="online-dot dot-${m.status}"></span></div>
+        <div class="member-info"><div class="member-name">${m.name}</div><div class="member-role">${m.role}</div></div>
+        <div class="member-projects"><span class="proj-count">${m.experience}</span><span class="proj-label">yrs</span></div>
+      </li>`
+    ).join("");
+
+    const milestones = [
+      { site: "North America Flagship", event: "Retail buildout — Phase 2", date: "Jun 21", done: false, urgent: true },
+      { site: "Athens Market Expansion", event: "Compliance audit review", date: "Jun 25", done: false, urgent: false },
+      { site: "Basra Distribution", event: "Inventory cataloguing", date: "Jul 2", done: false, urgent: false },
+      { site: "Karachi Market Survey", event: "Digital campaign — final review", date: "Aug 05", done: false, urgent: false },
+      { site: "Guatemala City Rollout", event: "Final report submission", date: "Jun 14", done: true, urgent: false }
+    ];
+    const msHtml = milestones.map(m => {
+      const parts = m.date.split(" ");
+      return `<li class="milestone-item ${m.done ? "ms-done" : ""}" style="cursor:pointer" onclick="go404()">
+        <div class="ms-date"><span>${parts[0]}</span><span>${parts[1]}</span></div>
+        <div class="ms-line"><div class="ms-dot"></div></div>
+        <div class="ms-body"><div class="ms-event">${m.event}</div><div class="ms-project">${m.site}</div></div>
+        ${m.urgent ? '<span class="ms-tag">Urgent</span>' : ''}
+        ${m.done ? '<span class="ms-tag ms-done-tag">Done</span>' : ''}
+      </li>`;
+    }).join("");
+
+    const legend = [
+      { color: "#D9A441", label: "North America", count: 5 },
+      { color: "#8B9DAF", label: "Europe", count: 4 },
+      { color: "#5D8A5E", label: "Latin America", count: 4 },
+      { color: "#C49A6C", label: "Middle East", count: 3 },
+      { color: "#B8860B", label: "South Asia", count: 2 }
+    ];
+    const legendHtml = legend.map(l =>
+      `<li class="legend-item" style="cursor:pointer" onclick="go404()">
+        <span class="legend-dot" style="background:${l.color}"></span>
+        <span class="legend-label">${l.label}</span>
+        <span class="legend-count">${l.count}</span>
+      </li>`
+    ).join("");
+
+    return `
+      <section class="stats-grid">${statsHtml}</section>
+      <section class="mid-grid">
+        <div class="card">
+          <div class="card-header"><div><h2 class="card-title">Active Market Launches</h2><p class="card-sub">Current regional operations overview</p></div></div>
+          <div class="table-wrapper"><table class="excavations-table"><thead><tr><th>Site</th><th>Region</th><th>Type</th><th>Status</th><th>Progress</th><th>End Date</th><th>Budget</th></tr></thead><tbody>${rows}</tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div><h2 class="card-title">Live Feed</h2><p class="card-sub">Field updates</p></div></div>
+          <ul class="activity-list">${feedHtml}</ul>
+        </div>
+      </section>
+      <section class="bottom-grid">
+        <div class="card">
+          <div class="card-header"><div><h2 class="card-title">Team Leaders</h2><p class="card-sub">Active regional directors</p></div></div>
+          <ul class="team-list">${teamHtml}</ul>
+        </div>
+        <div class="card">
+          <div class="card-header"><div><h2 class="card-title">Upcoming Deadlines</h2><p class="card-sub">Next 60 days</p></div></div>
+          <ul class="milestone-list">${msHtml}</ul>
+        </div>
+        <div class="card">
+          <div class="card-header"><div><h2 class="card-title">Site Distribution</h2><p class="card-sub">By region</p></div></div>
+          <div class="donut-chart" style="cursor:pointer" onclick="go404()">
+            <svg viewBox="0 0 120 120" class="donut-svg">
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#1f1f2e" stroke-width="16"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#D9A441" stroke-width="16" stroke-dasharray="65 212" stroke-dashoffset="0" stroke-linecap="round"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#8B9DAF" stroke-width="16" stroke-dasharray="57 212" stroke-dashoffset="-65" stroke-linecap="round"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#5D8A5E" stroke-width="16" stroke-dasharray="49 212" stroke-dashoffset="-122" stroke-linecap="round"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#C49A6C" stroke-width="16" stroke-dasharray="41 212" stroke-dashoffset="-171" stroke-linecap="round"/>
+              <text x="60" y="56" text-anchor="middle" class="donut-num">18</text>
+              <text x="60" y="68" text-anchor="middle" class="donut-label">Regions</text>
+            </svg>
+          </div>
+          <ul class="legend-list">${legendHtml}</ul>
+        </div>
+      </section>
+    `;
+  }
+
+  function renderLaunches() {
+    const statuses = ["All", "Active", "Ramping Up", "Review", "Completed"];
+    const filtered = state.launchFilter === "All" ? marketLaunches : marketLaunches.filter(e => e.status === state.launchFilter);
+    const stats = [
+      { icon: "🏬", value: marketLaunches.length, label: "Total Regions Launched" },
+      { icon: "🟢", value: marketLaunches.filter(e => e.status === "Active").length, label: "Active Now", accent: true },
+      { icon: "📍", value: marketLaunches.filter(e => e.status === "Ramping Up").length, label: "Ramping Up" },
+      { icon: "✅", value: marketLaunches.filter(e => e.status === "Completed").length, label: "Completed" }
+    ];
+    const statsHtml = stats.map((s, i) => {
+      const bar = [100, 60, 40, 20][i];
+      return `<div class="stat-card ${s.accent ? "stat-accent" : ""}" style="cursor:pointer" onclick="go404()">
+        <div class="stat-top"><span class="stat-icon">${s.icon}</span></div>
+        <div class="stat-value">${s.value}</div><div class="stat-label">${s.label}</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:${bar}%"></div></div>
+      </div>`;
+    }).join("");
+
+    const filterHtml = statuses.map(s =>
+      `<button class="btn-outline launch-filter-btn ${state.launchFilter === s ? "btn-active" : ""}" data-filter="${s}">${s}</button>`
+    ).join("");
+
+    const rows = filtered.map(t =>
+      `<tr style="cursor:pointer" onclick="go404()">
+        <td><div class="t-name">${t.name}</div><div class="t-sub">${t.site}</div></td>
+        <td>${regionTag(t.region)}</td>
+        <td class="type-col">${t.type}</td>
+        <td><span class="status-badge ${statusColors[t.status]}">${t.status}</span></td>
+        <td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:${t.progress}%"></div></div><span class="progress-pct">${t.progress}%</span></div></td>
+        <td class="date-col" style="font-size:12px">${t.director}</td>
+        <td class="date-col">${t.endDate}</td>
+        <td class="budget-col">${t.budget}</td>
+      </tr>`
+    ).join("");
+
+    return `
+      <section class="stats-grid">${statsHtml}</section>
+      <div class="card">
+        <div class="card-header"><div><h2 class="card-title">All Market Launches</h2><p class="card-sub">Full list of regional operations</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${filterHtml}</div></div>
+        <div class="table-wrapper"><table class="excavations-table"><thead><tr><th>Site</th><th>Region</th><th>Type</th><th>Status</th><th>Progress</th><th>Director</th><th>End Date</th><th>Budget</th></tr></thead><tbody>${rows}</tbody></table></div>
+      </div>
+    `;
+  }
+
+  function renderTeams() {
+    const stats = [
+      { icon: "👥", value: teamLeaders.length, label: "Team Leaders", bar: 80 },
+      { icon: "🟢", value: teamLeaders.filter(m => m.status === "active").length, label: "Online Now", bar: 85, accent: true },
+      { icon: "📋", value: teamLeaders.reduce((a, m) => a + m.projects, 0), label: "Active Teams", bar: 70 },
+      { icon: "🏅", value: Math.round(teamLeaders.reduce((a, m) => a + m.experience, 0) / teamLeaders.length), label: "Avg. Yrs w/ Meridian", bar: 75 }
+    ];
+    const statsHtml = stats.map(s =>
+      `<div class="stat-card ${s.accent ? "stat-accent" : ""}" style="cursor:pointer" onclick="go404()">
+        <div class="stat-top"><span class="stat-icon">${s.icon}</span></div>
+        <div class="stat-value">${s.value}</div><div class="stat-label">${s.label}</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:${s.bar}%"></div></div>
+      </div>`
+    ).join("");
+
+    const cards = teamLeaders.map(m =>
+      `<div class="team-card" onclick="go404()">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+          <div class="member-avatar" style="width:46px;height:46px;font-size:14px">${m.avatar}<span class="online-dot dot-${m.status}"></span></div>
+          <div><div class="member-name" style="font-size:15px">${m.name}</div><div class="member-role">${m.role}</div></div>
+        </div>
+        <div style="font-size:12.5px;color:var(--text-dim);line-height:1.9">
+          <div>🎓 ${m.speciality}</div>
+          <div>✉️ ${m.email}</div>
+          <div>📂 ${m.projects} active team${m.projects !== 1 ? "s" : ""} · ${m.experience} yrs experience</div>
+        </div>
+      </div>`
+    ).join("");
+
+    return `
+      <section class="stats-grid">${statsHtml}</section>
+      <div class="card"><div class="card-header"><div><h2 class="card-title">Regional Directors &amp; Specialists</h2><p class="card-sub">Full team directory</p></div></div>
+      <div class="team-grid">${cards}</div></div>
+    `;
+  }
+
+  function renderProducts() {
+    const q = state.productSearch.toLowerCase();
+    const filtered = productCatalog.filter(a => a.name.toLowerCase().includes(q) || a.region.toLowerCase().includes(q));
+    const stats = [
+      { icon: "📦", value: "2,847", label: "Total Catalogued", bar: 75, accent: true },
+      { icon: "🔬", value: "142", label: "In Testing", bar: 55 },
+      { icon: "⭐", value: "89", label: "Featured", bar: 30 },
+      { icon: "🔧", value: "34", label: "Reformulating", bar: 20 }
+    ];
+    const statsHtml = stats.map(s =>
+      `<div class="stat-card ${s.accent ? "stat-accent" : ""}" style="cursor:pointer" onclick="go404()">
+        <div class="stat-top"><span class="stat-icon">${s.icon}</span></div>
+        <div class="stat-value">${s.value}</div><div class="stat-label">${s.label}</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:${s.bar}%"></div></div>
+      </div>`
+    ).join("");
+
+    const badgeBg = { "Bestseller": "rgba(217,164,65,0.16)", "Featured": "rgba(139,157,175,0.18)", "Active": "rgba(34,197,94,0.14)", "Reformulated": "rgba(245,158,11,0.14)" };
+    const badgeColor = { "Bestseller": "#e8c9a8", "Featured": "#c7d3dc", "Active": "#86efac", "Reformulated": "#fcd34d" };
+
+    const rows = filtered.map(a =>
+      `<tr style="cursor:pointer" onclick="go404()">
+        <td class="type-col" style="font-size:11.5px;font-family:monospace">${a.id}</td>
+        <td><div class="t-name">${a.name}</div><div class="t-sub">${a.region}</div></td>
+        <td class="date-col">${a.category}</td>
+        <td class="date-col">${a.date}</td>
+        <td><span style="color:${stockColor[a.stock]};font-weight:700;font-size:12px">${a.stock}</span></td>
+        <td><span class="status-badge" style="background:${badgeBg[a.status]};color:${badgeColor[a.status]}">${a.status}</span></td>
+      </tr>`
+    ).join("");
+
+    return `
+      <section class="stats-grid">${statsHtml}</section>
+      <div class="card">
+        <div class="card-header"><div><h2 class="card-title">Product Registry</h2><p class="card-sub">Catalogued items across all regions</p></div>
+        <div class="search-box" style="flex:0 0 auto"><span class="search-icon">🔍</span><input id="product-search-input" placeholder="Search products…" value="${state.productSearch}"></div></div>
+        <div class="table-wrapper"><table class="excavations-table"><thead><tr><th>SKU</th><th>Product</th><th>Category</th><th>Launch Date</th><th>Stock Health</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>
+      </div>
+    `;
+  }
+
+  function renderReports() {
+    const stats = [
+      { icon: "📄", value: fieldReports.length, label: "Active Reports", bar: 80, accent: true },
+      { icon: "✅", value: fieldReports.filter(p => p.status === "Published").length, label: "Published", bar: 70 },
+      { icon: "🔍", value: fieldReports.filter(p => p.status === "In Review").length, label: "In Review", bar: 20 },
+      { icon: "📊", value: fieldReports.reduce((a, p) => a + p.reads, 0), label: "Total Reads", bar: 60 }
+    ];
+    const statsHtml = stats.map(s =>
+      `<div class="stat-card ${s.accent ? "stat-accent" : ""}" style="cursor:pointer" onclick="go404()">
+        <div class="stat-top"><span class="stat-icon">${s.icon}</span></div>
+        <div class="stat-value">${s.value}</div><div class="stat-label">${s.label}</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:${s.bar}%"></div></div>
+      </div>`
+    ).join("");
+
+    const cards = fieldReports.map(p =>
+      `<div class="research-card" onclick="go404()">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:180px">
+            <div style="font-weight:700;color:#fff;font-size:14px;margin-bottom:4px">${p.title}</div>
+            <div style="font-size:12.5px;color:var(--text-dim);margin-bottom:6px">${p.authors}</div>
+            <div style="font-size:12px;color:var(--text-dimmer)">${p.journal} · ${p.year}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+            <span style="background:${reportStatusColor[p.status]}22;color:${reportStatusColor[p.status]};border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:700">${p.status}</span>
+            ${p.reads > 0 ? `<span style="font-size:12px;color:var(--text-dim)">📊 ${p.reads} reads</span>` : ''}
+          </div>
+        </div>
+      </div>`
+    ).join("");
+
+    return `
+      <section class="stats-grid">${statsHtml}</section>
+      <div class="card"><div class="card-header"><div><h2 class="card-title">Field Reports</h2><p class="card-sub">Active studies and submissions</p></div></div>
+      <div style="display:flex;flex-direction:column;gap:14px">${cards}</div></div>
+    `;
+  }
+
+  function renderSchedule() {
+    const rows = scheduleEvents.map(ev => {
+      const parts = ev.date.split(" ");
+      let tag = "";
+      if (ev.type === "urgent") tag = `<span class="evt-tag" style="background:rgba(239,68,68,0.16);color:#fca5a5">Urgent</span>`;
+      if (ev.type === "meeting") tag = `<span class="evt-tag" style="background:rgba(139,157,175,0.2);color:#8B9DAF">Meeting</span>`;
+      return `<div class="schedule-row" onclick="go404()">
+        <div style="width:50px;flex-shrink:0;text-align:center">
+          <div style="font-size:11px;font-weight:700;color:${scheduleTypeColor[ev.type]};text-transform:uppercase;letter-spacing:0.04em">${parts[0]}</div>
+          <div style="font-size:18px;font-weight:800;color:#fff">${parts[1]}</div>
+        </div>
+        <div style="width:3px;align-self:stretch;border-radius:999px;background:${scheduleTypeColor[ev.type]};opacity:0.7;flex-shrink:0"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;color:#fff;font-size:13.5px">${ev.event}</div>
+          <div style="font-size:12px;color:var(--text-dim);margin-top:3px">📍 ${ev.site}</div>
+        </div>${tag}
+      </div>`;
+    }).join("");
+
+    return `<div class="card"><div class="card-header"><div><h2 class="card-title">Field Calendar</h2><p class="card-sub">All upcoming deadlines and events</p></div></div>
+      <div style="display:flex;flex-direction:column;gap:4px">${rows}</div></div>`;
+  }
+
+  function renderBudget() {
+    const totalAllocated = budgetData.reduce((a, b) => a + b.allocated, 0);
+    const totalSpent = budgetData.reduce((a, b) => a + b.spent, 0);
+    const remaining = totalAllocated - totalSpent;
+    const utilRate = Math.round((totalSpent / totalAllocated) * 100);
+    const stats = [
+      { icon: "💰", value: fmt(totalAllocated), label: "Total Allocated", bar: 100, accent: true },
+      { icon: "📉", value: fmt(totalSpent), label: "Total Spent", bar: utilRate },
+      { icon: "✅", value: fmt(remaining), label: "Remaining", bar: Math.round((remaining / totalAllocated) * 100) },
+      { icon: "📊", value: utilRate + "%", label: "Utilisation Rate", bar: utilRate }
+    ];
+    const statsHtml = stats.map(s =>
+      `<div class="stat-card ${s.accent ? "stat-accent" : ""}" style="cursor:pointer" onclick="go404()">
+        <div class="stat-top"><span class="stat-icon">${s.icon}</span></div>
+        <div class="stat-value" style="font-size:22px">${s.value}</div><div class="stat-label">${s.label}</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:${s.bar}%"></div></div>
+      </div>`
+    ).join("");
+
+    const rows = budgetData.map(b => {
+      const pct = Math.round((b.spent / b.allocated) * 100);
+      const barGrad = pct > 85 ? "linear-gradient(90deg,#ef4444,#f87171)" : "linear-gradient(90deg,#D9A441,#e8c9a8)";
+      return `<div onclick="go404()" style="cursor:pointer">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+          <div><span style="font-weight:700;color:#fff;font-size:13.5px">${b.site}</span>
+          <span class="region-tag" style="margin-left:10px;color:${regionAccents[b.region]};border-color:${regionAccents[b.region]};background:${regionAccents[b.region]}1f;font-size:11px">${b.region}</span></div>
+          <div style="text-align:right;font-size:12.5px;color:var(--text-dim)"><span style="color:#fff;font-weight:700">${fmt(b.spent)}</span> / ${fmt(b.allocated)}
+          <span style="margin-left:10px;color:${pct > 80 ? "#fca5a5" : "#D9A441"};font-weight:700">${pct}%</span></div>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,0.07);border-radius:999px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${barGrad};border-radius:999px;transition:width 1.5s ease"></div>
+        </div>
+      </div>`;
+    }).join('<div style="height:18px"></div>');
+
+    return `
+      <section class="stats-grid">${statsHtml}</section>
+      <div class="card"><div class="card-header"><div><h2 class="card-title">Budget by Region</h2><p class="card-sub">Allocation vs spend</p></div></div>
+      <div>${rows}</div></div>
+    `;
+  }
+
+  function renderTraining() {
+    const stats = [
+      { icon: "📚", value: trainingLibrary.length, label: "Resources", bar: 80, accent: true },
+      { icon: "📥", value: trainingLibrary.reduce((a, p) => a + p.downloads, 0).toLocaleString(), label: "Total Downloads", bar: 90 },
+      { icon: "📄", value: trainingLibrary.reduce((a, p) => a + p.pages, 0).toLocaleString(), label: "Total Pages", bar: 65 },
+      { icon: "🗓️", value: "2025", label: "Latest Year", bar: 100 }
+    ];
+    const statsHtml = stats.map(s =>
+      `<div class="stat-card ${s.accent ? "stat-accent" : ""}" style="cursor:pointer" onclick="go404()">
+        <div class="stat-top"><span class="stat-icon">${s.icon}</span></div>
+        <div class="stat-value">${s.value}</div><div class="stat-label">${s.label}</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:${s.bar}%"></div></div>
+      </div>`
+    ).join("");
+
+    const cards = trainingLibrary.map(pub =>
+      `<div class="pub-card" onclick="go404()">
+        <div style="font-size:30px;margin-bottom:12px">📖</div>
+        <div style="font-weight:700;color:#fff;font-size:14px;margin-bottom:6px;line-height:1.4">${pub.title}</div>
+        <div style="font-size:12px;color:var(--text-dimmer);margin-bottom:14px">${pub.type} · ${pub.year} · ${pub.pages} pages</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <span style="font-size:12px;color:#D9A441;font-weight:700">📥 ${pub.downloads.toLocaleString()} downloads</span>
+          <button class="btn-outline" style="padding:5px 12px;font-size:11.5px" onclick="event.stopPropagation();go404()">View</button>
+        </div>
+      </div>`
+    ).join("");
+
+    return `
+      <section class="stats-grid">${statsHtml}</section>
+      <div class="card"><div class="card-header"><div><h2 class="card-title">Published Resources</h2><p class="card-sub">Playbooks, guides, and reports</p></div></div>
+      <div class="pub-grid">${cards}</div></div>
+    `;
+  }
+
+  function toggleHtml(id, value) {
+    return `<div class="toggle-switch" data-toggle="${id}" style="background:${value ? "#D9A441" : "rgba(255,255,255,0.12)"}">
+      <div class="toggle-knob" style="left:${value ? "20px" : "3px"}"></div></div>`;
+  }
+
+  function renderSettings() {
+    const s = state.settings;
+    return `
+      <div class="card"><div class="card-header"><div><h2 class="card-title">Account</h2><p class="card-sub">Your profile information</p></div></div>
+        <div style="display:flex;align-items:center;gap:18px;margin-bottom:20px;flex-wrap:wrap">
+          <img src="https://placehold.co/64x64/1b1b29/f5f5f7?text=You" alt="avatar" style="width:64px;height:64px;border-radius:50%;border:2px solid rgba(217,164,65,0.4)">
+          <div><div style="font-weight:700;color:#fff;font-size:16px">Alex Morgan</div>
+          <div style="font-size:13px;color:var(--text-dim);margin-top:2px">VP of Partner Success · alex.morgan@meridian.com</div>
+          <div style="font-size:12px;color:#D9A441;margin-top:4px">🏬 7 years with Meridian</div></div>
+        </div>
+        <button class="btn-outline" style="border-color:#D9A441;color:#D9A441" onclick="go404()">Edit Profile</button>
+      </div>
+      <div class="card"><div class="card-header"><div><h2 class="card-title">Preferences</h2><p class="card-sub">Notifications and display</p></div></div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+            <div><div style="font-weight:700;color:#fff;font-size:13.5px">Push Notifications</div><div style="font-size:12.5px;color:var(--text-dim);margin-top:2px">Receive alerts for rank-ups and deadline changes</div></div>
+            ${toggleHtml("notifications", s.notifications)}
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+            <div><div style="font-weight:700;color:#fff;font-size:13.5px">Weekly Email Digest</div><div style="font-size:12.5px;color:var(--text-dim);margin-top:2px">Summary of team activity sent every Monday</div></div>
+            ${toggleHtml("emailDigest", s.emailDigest)}
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+            <div><div style="font-weight:700;color:#fff;font-size:13.5px">Dark Mode</div><div style="font-size:12.5px;color:var(--text-dim);margin-top:2px">Use dark colour scheme across the dashboard</div></div>
+            ${toggleHtml("darkMode", s.darkMode)}
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-top:18px">
+            <div><div style="font-weight:700;color:#fff;font-size:13.5px">Language</div><div style="font-size:12.5px;color:var(--text-dim);margin-top:2px">Interface display language</div></div>
+            <select class="pref-select" id="lang-select">${["English", "French", "Spanish", "Arabic", "Greek"].map(l => `<option ${s.language === l ? "selected" : ""}>${l}</option>`).join("")}</select>
+          </div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><div><h2 class="card-title">Danger Zone</h2><p class="card-sub">Irreversible account actions</p></div></div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn-outline" style="border-color:rgba(239,68,68,0.4);color:#fca5a5" onclick="go404()">Reset Password</button>
+          <button class="btn-outline" style="border-color:rgba(239,68,68,0.4);color:#fca5a5" onclick="go404()">Delete Account</button>
+        </div>
+      </div>
+    `;
+  }
+
+  const pageRenderers = {
+    dashboard: renderDashboard,
+    launches: renderLaunches,
+    teams: renderTeams,
+    products: renderProducts,
+    reports: renderReports,
+    schedule: renderSchedule,
+    budget: renderBudget,
+    training: renderTraining,
+    settings: renderSettings
+  };
+
+  function renderNav() {
+    const mainItems = navItems.slice(0, 6);
+    const mgmtItems = navItems.slice(6);
+    function itemHtml(item) {
+      const badge = item.id === "launches" ? `<span class="nav-badge">7</span>` : "";
+      return `<button class="nav-item ${state.activeNav === item.id ? "nav-active" : ""}" data-nav="${item.id}">
+        <span class="nav-icon">${item.icon}</span><span>${item.label}</span>${badge}</button>`;
+    }
+    document.getElementById("nav-main").innerHTML = mainItems.map(itemHtml).join("");
+    document.getElementById("nav-management").innerHTML = mgmtItems.map(itemHtml).join("");
+  }
+
+  function renderPage() {
+    const page = pageMap[state.activeNav];
+    document.getElementById("page-title-text").textContent = page.title;
+    document.getElementById("page-sub-text").textContent = page.sub;
+    document.getElementById("content-area").innerHTML = pageRenderers[state.activeNav]();
+    renderNav();
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }
+
+  function navigateTo(id) {
+    state.activeNav = id;
+    closeSidebar();
+    renderPage();
+  }
+
+  function openSidebar() {
+    document.getElementById("sidebar").classList.add("sidebar-open");
+    document.getElementById("sidebar-overlay").classList.add("show");
+  }
+  function closeSidebar() {
+    document.getElementById("sidebar").classList.remove("sidebar-open");
+    document.getElementById("sidebar-overlay").classList.remove("show");
+  }
+
+  document.getElementById("hamburger-btn").addEventListener("click", openSidebar);
+  document.getElementById("close-sidebar-btn").addEventListener("click", closeSidebar);
+  document.getElementById("sidebar-overlay").addEventListener("click", closeSidebar);
+  document.getElementById("notif-btn").addEventListener("click", go404);
+
+  document.addEventListener("click", function(e) {
+    const navBtn = e.target.closest("[data-nav]");
+    if (navBtn) { navigateTo(navBtn.getAttribute("data-nav")); return; }
+    const filterBtn = e.target.closest(".launch-filter-btn");
+    if (filterBtn) { state.launchFilter = filterBtn.getAttribute("data-filter"); renderPage(); return; }
+    const toggle = e.target.closest("[data-toggle]");
+    if (toggle) {
+      const key = toggle.getAttribute("data-toggle");
+      state.settings[key] = !state.settings[key];
+      renderPage();
+      return;
+    }
+  });
+
+  document.addEventListener("input", function(e) {
+    if (e.target && e.target.id === "product-search-input") {
+      state.productSearch = e.target.value;
+      const caretPos = e.target.selectionStart;
+      renderPage();
+      const input = document.getElementById("product-search-input");
+      if (input) { input.focus(); input.setSelectionRange(caretPos, caretPos); }
+    }
+  });
+
+  document.addEventListener("change", function(e) {
+    if (e.target && e.target.id === "lang-select") {
+      state.settings.language = e.target.value;
+    }
+  });
+
+  renderPage();
+</script>
+</body>
+</html>

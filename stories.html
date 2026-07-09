@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partner Stories | Stackly</title>
+  <style>
+    /* reset & base */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #fff;
+      color: #1f2937;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    ul { list-style: none; }
+
+    :root {
+      --orange: #F26522;
+      --orange-dark: #e05a1a;
+      --orange-tint: #fff2ea;
+      --orange-border: #ffd9c2;
+      --ink: #14161f;
+      --ink-soft: #1a1d2e;
+      --text: #1f2937;
+      --text-muted: #4b5563;
+      --gray-bg: #f6f7f9;
+      --gray-300: #eceef1;
+      --border: #e5e7eb;
+      --radius: 16px;
+    }
+
+    .wrap { max-width: 1200px; margin: 0 auto; }
+    .px { padding-left: 24px; padding-right: 24px; }
+
+    /* header */
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: #fff; border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      max-width: 1200px; margin: 0 auto; padding: 16px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .logo-img { height: 30px; width: auto; }
+    .header-nav { display: flex; align-items: center; gap: 32px; }
+    .header-nav a {
+      font-size: 15px; font-weight: 600; color: var(--text-muted);
+      transition: color .2s; padding: 4px 0;
+    }
+    .header-nav a:hover { color: var(--ink); }
+    .header-nav a.active { color: var(--ink); }
+    .header-nav a.active::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: -4px;
+      height: 2px; background: var(--orange); border-radius: 2px;
+    }
+    .header-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+    .nav-toggle { display: none; background: none; border: none; width: 26px; height: 26px; color: var(--ink); cursor: pointer; }
+
+    .roll-btn {
+      position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 10px;
+      padding: 13px 26px; border-radius: 999px; font-weight: 600; font-size: 14.5px;
+      cursor: pointer; border: none; line-height: 1; white-space: nowrap;
+    }
+    .roll-btn.orange { background: var(--orange); color: #fff; }
+    .roll-btn.dark { background: var(--ink); color: #fff; }
+    .roll-btn.big { padding: 17px 32px; font-size: 15.5px; }
+    .roll-text { display: inline-block; overflow: hidden; height: 1.2em; }
+    .roll-text-inner { display: flex; flex-direction: column; transition: transform .35s cubic-bezier(.65,0,.35,1); }
+    .roll-text-inner span { height: 1.2em; line-height: 1.2em; display: block; }
+    .roll-btn:hover .roll-text-inner { transform: translateY(-1.2em); }
+    .roll-arrow { display: inline-flex; width: 16px; height: 16px; flex-shrink: 0; }
+    .roll-arrow svg { width: 100%; height: 100%; }
+
+    /* mobile menu */
+    .mobile-menu { position: fixed; inset: 0; z-index: 200; display: none; }
+    .mobile-menu.open { display: block; }
+    .mobile-menu-backdrop { position: absolute; inset: 0; background: rgba(20,22,31,.45); }
+    .mobile-sheet {
+      position: absolute; top: 0; right: 0; bottom: 0; width: 78%; max-width: 320px;
+      background: #fff; padding: 28px 24px; display: flex; flex-direction: column;
+      gap: 28px; box-shadow: -8px 0 30px rgba(0,0,0,.12);
+    }
+    .mobile-nav-links { display: flex; flex-direction: column; gap: 18px; }
+    .mobile-nav-links a { font-size: 17px; font-weight: 600; color: var(--ink); }
+    .mobile-sheet .roll-btn { width: 100%; justify-content: center; }
+
+    /* badge */
+    .badge-pill {
+      display: inline-block; padding: 7px 16px; border-radius: 999px;
+      background: var(--orange-tint); color: var(--orange-dark);
+      font-size: 13px; font-weight: 700; border: 1px solid var(--orange-border);
+    }
+    .badge-pill.gray-300 { background: var(--gray-300); color: var(--text-muted); border-color: #d7dbe0; }
+    .big-heading {
+      text-align: center; font-size: clamp(28px,4vw,44px); line-height: 1.2;
+      font-weight: 800; color: var(--ink); margin: 0 auto 48px; max-width: 760px;
+    }
+
+    /* hero */
+    .page-hero {
+      position: relative; padding: 96px 0 76px; overflow: hidden;
+      background: var(--ink-soft);
+    }
+    .page-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(1100px 480px at 15% -10%, rgba(242,101,34,.35), transparent 60%),
+                  radial-gradient(900px 420px at 100% 0%, rgba(242,101,34,.18), transparent 55%);
+    }
+    .page-hero-content { position: relative; text-align: center; color: #fff; }
+    .page-hero h1 { font-size: clamp(30px,4.6vw,52px); line-height: 1.16; font-weight: 800; margin: 18px 0 18px; }
+    .page-hero p { font-size: 16.5px; color: #cfd2dd; max-width: 600px; margin: 0 auto 34px; line-height: 1.65; }
+    .hero-cta-row { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+    /* stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; text-align: center; }
+    .stat-number { font-size: clamp(26px,3vw,34px); font-weight: 800; color: var(--orange); }
+    .stat-label { font-size: 13.5px; color: var(--text-muted); margin-top: 6px; }
+
+    /* cards */
+    .cards-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 28px; }
+    .cards-grid.cols-3 { grid-template-columns: repeat(3,1fr); }
+    .media-card { border-radius: var(--radius); overflow: hidden; background: #fff; border: 1px solid var(--border); transition: transform .25s, box-shadow .25s; }
+    .media-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(20,22,31,.10); }
+    .media-frame { position: relative; background: #e7e7ea; overflow: hidden; }
+    .media-frame.ratio-4x3 { aspect-ratio: 4/3; }
+    .media-frame.ratio-square { aspect-ratio: 1/1; }
+    .media-frame video { width: 100%; height: 100%; object-fit: cover; }
+    .hover-pill {
+      position: absolute; left: 16px; bottom: 16px; display: inline-flex; align-items: center; gap: 8px;
+      background: #fff; color: var(--ink); padding: 9px 14px; border-radius: 999px; font-size: 13px; font-weight: 700;
+      opacity: 0; transform: translateY(6px); transition: all .25s;
+    }
+    .hover-pill.dark { background: var(--ink); color: #fff; }
+    .media-card:hover .hover-pill { opacity: 1; transform: translateY(0); }
+    .hp-icon { width: 14px; height: 14px; display: inline-flex; }
+    .hp-icon svg { width: 100%; height: 100%; }
+    .media-caption { padding: 18px 18px 20px; }
+    .media-caption .desc { font-size: 13.5px; color: var(--text-muted); margin: 0 0 6px; line-height: 1.55; }
+    .media-caption .title { font-size: 16px; font-weight: 700; color: var(--ink); margin: 0; }
+
+    /* filter */
+    .filter-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 44px; }
+    .filter-chip {
+      padding: 9px 18px; border-radius: 999px; border: 1px solid var(--border); background: #fff;
+      font-size: 13.5px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all .2s;
+    }
+    .filter-chip:hover { border-color: var(--orange-border); color: var(--orange-dark); }
+    .filter-chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+    /* quote card */
+    .quote-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 26px; display: flex; gap: 16px; align-items: flex-start; }
+    .quote-card img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .quote-card .quote-name { font-weight: 700; color: var(--ink); font-size: 14.5px; margin: 0 0 2px; }
+    .quote-card .quote-rank { font-size: 12.5px; color: var(--orange-dark); font-weight: 600; margin: 0 0 10px; }
+    .quote-card p.quote-text { margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-muted); }
+
+    /* cta banner */
+    .cta-banner {
+      background: linear-gradient(120deg, var(--ink) 0%, #2b2f45 100%);
+      border-radius: 24px; padding: 56px 40px; text-align: center; color: #fff;
+    }
+    .cta-banner h2 { font-size: clamp(22px,3vw,30px); margin: 0 0 10px; }
+    .cta-banner p { color: #cfd2dd; margin: 0 0 26px; font-size: 15px; }
+
+    /* footer — FIXED RESPONSIVE */
+    .site-footer { background: var(--ink-soft); color: #c7c9d6; padding: 64px 0 28px; }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.4fr 2fr;
+      gap: 48px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .footer-logo-img { height: 26px; margin-bottom: 16px; }
+    .footer-brand p { font-size: 13.5px; line-height: 1.7; color: #9498a8; max-width: 320px; }
+
+    .footer-address {
+      margin-top: 20px;
+      font-size: 13.5px;
+      line-height: 1.8;
+      color: #9498a8;
+      word-break: break-word; /* force wrap on long words */
+    }
+    .footer-address strong { display: block; margin-bottom: 4px; color: #e4e6ee; font-weight: 700; }
+    .footer-address a { color: #9498a8; transition: color .2s; }
+    .footer-address a:hover { color: #fff; }
+
+    .footer-social { display: flex; align-items: center; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+    .footer-social a {
+      width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(255,255,255,.16); border-radius: 50%; color: #c7c9d6;
+      transition: background .2s, color .2s, transform .2s, border-color .2s;
+    }
+    .footer-social a:hover { background: var(--orange); border-color: var(--orange); color: #fff; transform: translateY(-3px); }
+    .footer-social svg { width: 16px; height: 16px; }
+
+    .footer-cols { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+    .footer-cols.single { grid-template-columns: minmax(180px,220px); justify-content: flex-end; }
+    .footer-col h4 { color: #fff; font-size: 13.5px; margin: 0 0 16px; }
+    .footer-col ul { display: flex; flex-direction: column; gap: 11px; }
+    .footer-col a { font-size: 13.5px; color: #9498a8; transition: color .2s; }
+    .footer-col a:hover { color: #fff; }
+
+    .footer-bottom {
+      display: flex; justify-content: space-between; gap: 24px;
+      padding-top: 24px; font-size: 12.5px; color: #767a8c; flex-wrap: wrap;
+    }
+    .footer-disclosure { max-width: 640px; line-height: 1.6; }
+
+    /* responsive */
+    @media (max-width: 960px) {
+      .header-nav, .header-right { display: none; }
+      .nav-toggle { display: inline-flex; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .cards-grid, .cards-grid.cols-3 { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; gap: 30px; }
+      .footer-cols { grid-template-columns: repeat(3,1fr); }
+      .footer-cols.single { grid-template-columns: minmax(180px,220px); justify-content: flex-start; }
+    }
+
+    @media (max-width: 768px) {
+      .cards-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+      .quote-card { flex-direction: column; align-items: center; text-align: center; }
+      .quote-card img { width: 72px; height: 72px; }
+      .cta-banner { padding: 36px 24px; }
+      .cta-banner h2 { font-size: 22px; }
+    }
+
+    @media (max-width: 640px) {
+      .px { padding-left: 16px; padding-right: 16px; }
+      .section-white, .section-gray { padding: 56px 0; }
+      .page-hero { padding: 64px 0 48px; }
+      .page-hero h1 { font-size: 26px; }
+      .page-hero p { font-size: 14.5px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+      .stat-number { font-size: 22px; }
+      .stat-label { font-size: 12px; }
+      .cards-grid.cols-3 { grid-template-columns: 1fr; }
+      .quote-card { flex-direction: row; align-items: flex-start; text-align: left; padding: 18px; }
+      .quote-card img { width: 56px; height: 56px; flex-shrink: 0; }
+      .filter-row { gap: 8px; }
+      .filter-chip { font-size: 12px; padding: 7px 14px; }
+      .roll-btn.big { padding: 12px 20px; font-size: 13px; }
+      .cta-banner { padding: 28px 16px; border-radius: 18px; }
+      .cta-banner h2 { font-size: 20px; }
+      .cta-banner p { font-size: 13.5px; margin-bottom: 18px; }
+      .footer-cols { grid-template-columns: 1fr 1fr; }
+      .footer-cols.single { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; gap: 12px; }
+      .footer-disclosure { max-width: 100%; }
+      .mobile-sheet { width: 85%; max-width: 280px; padding: 24px 16px; }
+      .mobile-nav-links a { font-size: 16px; }
+
+      /* FIX: footer address & top overflow */
+      .footer-top {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .footer-brand p {
+        max-width: 100%;
+      }
+      .footer-address {
+        word-break: break-word;
+        overflow-wrap: break-word;
+      }
+      .footer-address br {
+        display: inline; /* keep line breaks */
+      }
+      .footer-address a {
+        word-break: break-all;
+      }
+      .footer-cols.single {
+        justify-content: flex-start;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .footer-cols.single .footer-col:first-child {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .header-inner { padding: 12px 12px; }
+      .logo-img { height: 24px; }
+      .mobile-sheet { padding: 20px 14px; }
+      .mobile-nav-links a { font-size: 15px; }
+      .stats-grid { gap: 12px; }
+      .stat-number { font-size: 18px; }
+      .cta-banner { padding: 20px 12px; }
+      .cta-banner h2 { font-size: 17px; }
+      .footer-cols.single {
+        grid-template-columns: 1fr;
+      }
+    }
+    .desktop-break { display: inline; }
+    @media (max-width:640px) { .desktop-break { display: block; } }
+  </style>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo-slot"><img src="./Assets/S.webp" alt="Stackly logo" class="logo-img"></a>
+    <nav class="header-nav">
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="compensation.html">Compensation</a>
+      <a href="stories.html" class="active">Stories</a>
+      <a href="join.html">Join</a>
+    </nav>
+    <div class="header-right">
+      <button class="roll-btn dark" onclick="window.location.href='Login.html';">
+        <span class="roll-text"><span class="roll-text-inner"><span>Get started</span><span>Get started</span></span></span>
+        <span class="roll-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg></span>
+      </button>
+    </div>
+    <button class="nav-toggle" id="menu-toggle" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-backdrop" id="menu-backdrop"></div>
+    <div class="mobile-sheet">
+      <div class="mobile-nav-links">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="compensation.html">Compensation</a>
+        <a href="stories.html">Stories</a>
+        <a href="join.html">Join</a>
+      </div>
+      <!-- FIX: hamburger "Get started" navigates to Login.html -->
+      <button class="roll-btn orange" onclick="window.location.href='Login.html';">
+        <span class="roll-text"><span class="roll-text-inner"><span>Get started</span><span>Get started</span></span></span>
+        <span class="roll-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="page-hero-content wrap px">
+    <span class="badge-pill">Real partner stories</span>
+    <h1>Real people, real timelines<br class="desktop-break"> — no overnight promises.</h1>
+    <p>Every story here is a real partner, at a real rank, on a real timeline. No screenshots of checks, no guaranteed numbers — just what building slowly and honestly looks like.</p>
+    <div class="hero-cta-row">
+      <button class="roll-btn orange big" onclick="window.location.href='404.html';">
+        <span class="roll-text"><span class="roll-text-inner"><span>Read the Income Disclosure</span><span>Read the Income Disclosure</span></span></span>
+        <span class="roll-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="section-white" style="padding-top:56px;padding-bottom:56px;">
+  <div class="wrap px">
+    <div class="stats-grid">
+      <div><div class="stat-number">120K+</div><div class="stat-label">Active partners worldwide</div></div>
+      <div><div class="stat-number">18 mo.</div><div class="stat-label">Median time to Team Lead</div></div>
+      <div><div class="stat-number">4 hrs</div><div class="stat-label">Median hours worked / week</div></div>
+      <div><div class="stat-number">$186M</div><div class="stat-label">Paid to partners in 2025</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED -->
+<section class="section-gray" id="featured">
+  <div class="wrap px">
+    <div class="badge-row"><span class="badge-pill gray-300">Featured</span></div>
+    <h2 class="big-heading">Two journeys, told in full.</h2>
+    <div class="cards-grid">
+      <a href="#" class="media-card">
+        <div class="media-frame ratio-4x3" style="background:#1a1d2e;">
+          <video autoplay muted loop playsinline poster="./Assets/mlm6.webp" src="./Assets/mlm6.webp"></video>
+          <div class="hover-pill"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17a5 5 0 0 1 0-10h1"/><path d="M15 7a5 5 0 0 1 0 10h-1"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span><span class="hp-label">Watch story</span></div>
+        </div>
+        <div class="media-caption"><p class="desc">Started on a lunch break, replaced her salary in eighteen months.</p><p class="title">Priya's Story</p></div>
+      </a>
+      <a href="#" class="media-card">
+        <div class="media-frame ratio-square" style="background:#6b6b6b;">
+          <video autoplay muted loop playsinline poster="./Assets/mlm7.webp" src="./Assets/mlm7.webp"></video>
+          <div class="hover-pill dark"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg></span><span class="hp-label">Read case study</span></div>
+        </div>
+        <div class="media-caption"><p class="desc">Went from skeptic to Team Lead by mentoring five new partners.</p><p class="title">Daniel's Story</p></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ALL STORIES -->
+<section class="section-white" id="all-stories">
+  <div class="wrap px">
+    <div class="badge-row"><span class="badge-pill">In their own words</span></div>
+    <h2 class="section-heading" style="text-align:center;font-size:clamp(26px,3.4vw,38px);font-weight:700;color:var(--ink);max-width:720px;margin:0 auto 44px;">More partners, more timelines.</h2>
+    <div class="filter-row" data-target="#stories-grid">
+      <button class="filter-chip active" data-filter="all">All</button>
+      <button class="filter-chip" data-filter="side">Side hustle</button>
+      <button class="filter-chip" data-filter="fulltime">Went full-time</button>
+      <button class="filter-chip" data-filter="team">Team building</button>
+    </div>
+    <div class="cards-grid cols-3" id="stories-grid">
+      <div class="quote-card" data-cat="team"><img src="./Assets/mlm8.webp" alt=""><div><p class="quote-name">Marcus O.</p><p class="quote-rank">Ambassador · 4 years in</p><p class="quote-text">I spent the first year focused only on retail. The team came later, once I actually believed in the products.</p></div></div>
+      <div class="quote-card" data-cat="fulltime"><img src="./Assets/mlm9.webp" alt=""><div><p class="quote-name">Elena V.</p><p class="quote-rank">Ambassador · 3 years in</p><p class="quote-text">I didn't go full-time until my storefront income had covered my old salary for six straight months.</p></div></div>
+      <div class="quote-card" data-cat="side"><img src="./Assets/mlm10.webp" alt=""><div><p class="quote-name">Jason T.</p><p class="quote-rank">Director · 2 years in</p><p class="quote-text">I still work my day job. Stackly is five hours a week that covers our family's grocery bill and then some.</p></div></div>
+      <div class="quote-card" data-cat="team"><img src="./Assets/mlm11.webp" alt=""><div><p class="quote-name">Amara N.</p><p class="quote-rank">Director · 2.5 years in</p><p class="quote-text">Mentoring five people to Senior Partner taught me more about the plan than any training call did.</p></div></div>
+      <div class="quote-card" data-cat="side"><img src="./Assets/mlm2.webp" alt=""><div><p class="quote-name">Rosa K.</p><p class="quote-rank">Senior Partner · 9 months in</p><p class="quote-text">Ten customers on auto-reorder is quietly the best decision I made in my first quarter.</p></div></div>
+      <div class="quote-card" data-cat="fulltime"><img src="./Assets/mlm3.webp" alt=""><div><p class="quote-name">Ben H.</p><p class="quote-rank">Team Lead · 14 months in</p><p class="quote-text">The Academy launch track gave me a script for the first ten conversations — after that it got easier.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-gray">
+  <div class="wrap px">
+    <div class="cta-banner">
+      <h2>Ready to write your own timeline?</h2>
+      <p>Talk to a real Stackly mentor before you commit to anything.</p>
+      <button class="roll-btn orange big" onclick="window.location.href='404.html';">
+        <span class="roll-text"><span class="roll-text-inner"><span>Book a discovery call</span><span>Book a discovery call</span></span></span>
+        <span class="roll-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg></span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER (fixed responsive) -->
+<footer class="site-footer">
+  <div class="wrap px">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html"><img src="./Assets/Stacklyimg1.webp" alt="Stackly" class="footer-logo-img"></a>
+        <p>Stackly is a network marketing company for everyday people who want to build real income through mentorship and products worth sharing.</p>
+        <div class="footer-address">
+          <strong>Reach us</strong>
+          Nagole, Hyderabad<br>
+          <a href="mailto:stackly@gmail.com">stackly@gmail.com</a><br>
+          <a href="tel:+919879876751">+91 9879876751</a>
+        </div>
+        <div class="footer-social">
+          <a href="404.html" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg></a>
+          <a href="404.html" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 8h2V4h-2a4 4 0 0 0-4 4v2H9v4h2v6h4v-6h2.2l.8-4H15V8a1 1 0 0 1 1-1"/></svg></a>
+          <a href="404.html" aria-label="X"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4l16 16M20 4L4 20"/></svg></a>
+          <a href="404.html" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="7.5" y1="10" x2="7.5" y2="17"/><circle cx="7.5" cy="7" r="1"/><path d="M11.5 17v-4.5a2.5 2.5 0 0 1 5 0V17"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-cols single">
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="compensation.html">Compensation</a></li>
+            <li><a href="stories.html">Stories</a></li>
+            <li><a href="join.html">Join</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Stackly Network. All rights reserved.</span>
+      <span class="footer-disclosure">Income Disclosure: earnings depend on individual effort, skill, and market conditions, and are not guaranteed. Most partners earn primarily through personal retail sales — full figures are in our published Income Disclosure Statement.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // mobile menu
+  const menuToggle = document.getElementById('menu-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuBackdrop = document.getElementById('menu-backdrop');
+  if (menuToggle && mobileMenu) {
+    menuToggle.addEventListener('click', () => mobileMenu.classList.add('open'));
+    menuBackdrop.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    });
+  }
+
+  // filter
+  document.querySelectorAll('.filter-row').forEach(row => {
+    const chips = row.querySelectorAll('.filter-chip');
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        const filter = chip.getAttribute('data-filter');
+        const grid = document.querySelector(row.getAttribute('data-target'));
+        if (!grid) return;
+        grid.querySelectorAll('[data-cat]').forEach(card => {
+          card.style.display = (filter === 'all' || card.getAttribute('data-cat') === filter) ? '' : 'none';
+        });
+      });
+    });
+  });
+</script>
+</body>
+</html>

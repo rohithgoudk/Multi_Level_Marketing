@@ -1,0 +1,1000 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lumora — Distributor Network Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0d0a14;
+      --surface:rgba(255,255,255,0.03);
+      --surface-2:rgba(255,255,255,0.06);
+      --border:rgba(255,255,255,0.1);
+      --accent:#D4AF37;
+      --accent-soft:rgba(212,175,55,0.16);
+      --text-primary:#f7f5f2;
+      --text-secondary:rgba(247,245,242,0.62);
+      --text-tertiary:rgba(247,245,242,0.4);
+      --radius:16px;
+      --radius-sm:10px;
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0;padding:0;}
+    body{
+      background:var(--bg);
+      color:var(--text-primary);
+      font-family:'Inter',sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
+    ::-webkit-scrollbar{width:6px;height:6px;}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:9999px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+
+    .dashboard-root{display:flex;min-height:100vh;width:100%;overflow-x:hidden;}
+
+    /* ============ Sidebar ============ */
+    .sidebar-overlay{display:none;}
+    .sidebar{
+      width:256px;flex-shrink:0;background:#0a0810;border-right:1px solid var(--border);
+      display:flex;flex-direction:column;padding:1.5rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto;
+    }
+    .sidebar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;padding:0 .25rem;}
+    .brand{display:flex;align-items:center;gap:.55rem;}
+    .brand-logo-img{
+      height:40px;
+      width:auto;
+      max-width:160px;
+      object-fit:contain;
+      display:block;
+    }
+    .brand-logo-fallback{
+      width:40px;height:40px;border-radius:9px;
+      border:1px dashed rgba(212,175,55,0.45);color:var(--accent);
+      font-size:1.2rem;display:flex;align-items:center;justify-content:center;font-weight:700;
+    }
+    .close-btn{display:none;background:transparent;border:none;color:var(--text-secondary);font-size:1rem;cursor:pointer;width:30px;height:30px;border-radius:50%;align-items:center;justify-content:center;}
+    .close-btn:hover{background:var(--surface-2);color:#fff;}
+    .sidebar-section-label{font-size:.65rem;font-weight:600;letter-spacing:.12em;color:var(--text-tertiary);padding:0 .6rem;margin:1.25rem 0 .5rem;}
+    .sidebar-nav{display:flex;flex-direction:column;gap:.15rem;}
+    .nav-item{display:flex;align-items:center;gap:.7rem;width:100%;padding:.6rem .65rem;border-radius:var(--radius-sm);background:transparent;border:none;color:var(--text-secondary);font-size:.85rem;font-weight:500;font-family:inherit;cursor:pointer;text-align:left;transition:background .15s,color .15s;position:relative;}
+    .nav-item:hover{background:var(--surface-2);color:#fff;}
+    .nav-item.nav-active{background:var(--accent-soft);color:#fff;box-shadow:inset 0 0 0 1px rgba(212,175,55,.4);}
+    .nav-icon{font-size:.95rem;width:1.1rem;text-align:center;flex-shrink:0;}
+    .nav-badge{margin-left:auto;background:var(--accent);color:#221a05;font-size:.65rem;font-weight:700;border-radius:9999px;padding:.05rem .4rem;}
+    .logout-full-btn{
+      display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.7rem .9rem;border-radius:var(--radius-sm);
+      background:rgba(255,255,255,0.02);border:1px solid var(--border);color:var(--text-secondary);font-size:.85rem;font-weight:500;
+      font-family:inherit;cursor:pointer;transition:border-color .2s,color .2s,background .2s;text-decoration:none;
+    }
+    .logout-full-btn:hover{border-color:rgba(212,175,55,.5);color:#fff;background:var(--accent-soft);}
+
+    /* ============ Main content ============ */
+    .main-content{flex:1;min-width:0;max-width:100%;display:flex;flex-direction:column;height:100vh;overflow-y:auto;overflow-x:hidden;}
+    .topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;padding:0.75rem 1rem;background:rgba(13,10,20,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);flex-wrap:nowrap;}
+    .topbar-left{display:flex;align-items:center;gap:0.6rem;min-width:0;flex-shrink:1;}
+    .hamburger{display:none;flex-direction:column;gap:3px;background:transparent;border:none;cursor:pointer;padding:0.3rem;flex-shrink:0;}
+    .hamburger span{width:16px;height:2px;background:#fff;border-radius:2px;}
+    .page-title{min-width:0;display:flex;align-items:baseline;gap:0.4rem;flex-wrap:nowrap;}
+    .page-title h1{font-family:'Playfair Display',serif;font-style:italic;font-size:1.2rem;font-weight:600;color:#fff;line-height:1.2;margin:0;white-space:nowrap;}
+    .page-title p{font-size:0.7rem;color:var(--text-tertiary);margin:0;white-space:nowrap;display:none;}
+    .topbar-right{display:flex;align-items:center;gap:0.5rem;flex-shrink:0;margin-left:auto;}
+    .search-box{display:flex;align-items:center;gap:0.3rem;background:var(--surface);border:1px solid var(--border);border-radius:9999px;padding:0.3rem 0.7rem;min-width:0;flex-shrink:1;}
+    .search-box input{background:transparent;border:none;outline:none;color:#fff;font-size:0.7rem;font-family:inherit;width:120px;max-width:100%;min-width:40px;}
+    .search-box input::placeholder{color:var(--text-tertiary);font-size:0.65rem;}
+    .search-icon{font-size:0.7rem;opacity:.6;}
+    .icon-btn{position:relative;width:30px;height:30px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.8rem;transition:border-color .2s;flex-shrink:0;}
+    .icon-btn:hover{border-color:rgba(212,175,55,.4);}
+    .notif-dot{position:absolute;top:6px;right:6px;width:5px;height:5px;border-radius:50%;background:#f87171;box-shadow:0 0 0 2px #0a0810;}
+    .content-area{padding:1rem 1rem 2rem;display:flex;flex-direction:column;gap:1rem;min-width:0;max-width:100%;overflow-x:hidden;}
+
+    /* ============ Welcome banner ============ */
+    .welcome-banner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.6rem;background:linear-gradient(120deg,rgba(212,175,55,.14),rgba(212,175,55,.02));border:1px solid rgba(212,175,55,.25);border-radius:var(--radius);padding:1rem 1.25rem;}
+    .welcome-text h2{font-family:'Playfair Display',serif;font-style:italic;font-weight:600;font-size:1.2rem;margin:0;color:#fff;}
+    .welcome-stats-mini{display:flex;align-items:center;gap:0.8rem;}
+    .mini-stat{display:flex;flex-direction:column;align-items:flex-end;}
+    .mini-stat-value{font-family:'Playfair Display',serif;font-style:italic;font-size:1.1rem;color:var(--accent);font-weight:600;}
+    .mini-stat-label{font-size:.6rem;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;}
+    .mini-stat-divider{width:1px;height:24px;background:var(--border);}
+
+    /* ============ Stats grid ============ */
+    .stats-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.8rem;}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.9rem 1rem;min-width:0;cursor:pointer;transition:border-color .2s,transform .2s;}
+    .stat-card:hover{border-color:rgba(212,175,55,.35);transform:translateY(-2px);}
+    .stat-card.stat-accent{background:linear-gradient(160deg,rgba(212,175,55,.12),rgba(212,175,55,.02));border-color:rgba(212,175,55,.4);}
+    .stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;}
+    .stat-icon{font-size:0.95rem;}
+    .stat-delta{font-size:.6rem;font-weight:600;padding:.1rem .4rem;border-radius:9999px;color:var(--text-tertiary);}
+    .stat-delta.up{color:#86efac;background:rgba(34,197,94,.12);}
+    .stat-value{font-family:'Playfair Display',serif;font-style:italic;font-size:1.5rem;color:#fff;line-height:1.1;font-weight:600;}
+    .stat-label{font-size:.68rem;color:var(--text-secondary);margin-top:.2rem;}
+    .stat-bar{height:3px;background:rgba(255,255,255,.06);border-radius:9999px;overflow:hidden;margin-top:.6rem;}
+    .stat-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),#f3dd8f);border-radius:9999px;transition:width 1s ease;}
+
+    /* ============ Charts ============ */
+    .charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;}
+    .chart-card{padding:1rem;}
+    .chart-controls{display:flex;gap:.3rem;}
+    .chart-container{margin-top:.3rem;}
+    .chart-svg{width:100%;height:auto;display:block;}
+    .bar-animate{transition:height .6s ease;}
+
+    /* ============ Bottom grid ============ */
+    .bottom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;}
+    @media (max-width:1150px){.charts-grid{grid-template-columns:1fr;}.bottom-grid{grid-template-columns:1fr;}}
+    @media (max-width:900px){.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media (max-width:560px){.stats-grid{grid-template-columns:minmax(0,1fr);}}
+
+    /* ============ Card ============ */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;min-width:0;}
+    .card.full-width{width:100%;}
+    .card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:0.6rem;margin-bottom:0.8rem;flex-wrap:wrap;}
+    .card-title{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;font-weight:600;color:#fff;margin:0;}
+    .card-sub{font-size:.68rem;color:var(--text-tertiary);margin:.1rem 0 0;}
+
+    /* ============ Buttons ============ */
+    .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-secondary);border-radius:9999px;padding:.3rem .7rem;font-size:.7rem;font-weight:500;font-family:inherit;cursor:pointer;transition:border-color .2s,color .2s;}
+    .btn-outline:hover{border-color:rgba(212,175,55,.4);color:#fff;}
+    .btn-outline.active,.btn-outline.btn-active{border-color:var(--accent);color:var(--accent);}
+    .btn-sm{padding:.25rem .6rem;font-size:.65rem;}
+    .btn-primary{background:linear-gradient(120deg,var(--accent),#b98f24);color:#221a05;border:none;border-radius:9999px;padding:.3rem .8rem;font-size:.7rem;font-weight:700;font-family:inherit;cursor:pointer;transition:transform .2s;}
+    .btn-primary:hover{transform:scale(1.03);}
+    .btn-icon{background:transparent;border:1px solid var(--border);border-radius:6px;width:24px;height:24px;font-size:.65rem;cursor:pointer;margin-right:2px;}
+    .btn-icon:hover{border-color:rgba(212,175,55,.4);}
+    .btn-approve{background:rgba(34,197,94,.14);color:#86efac;border:1px solid rgba(34,197,94,.3);border-radius:6px;padding:.3rem .6rem;font-size:.65rem;font-weight:700;cursor:pointer;font-family:inherit;}
+    .btn-reject{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.28);border-radius:6px;padding:.3rem .6rem;font-size:.65rem;font-weight:700;cursor:pointer;font-family:inherit;margin-left:.3rem;}
+    .btn-danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.35);color:#fca5a5;border-radius:9999px;padding:.4rem .9rem;font-size:.7rem;font-weight:600;cursor:pointer;font-family:inherit;}
+
+    /* ============ Tables ============ */
+    .table-wrapper{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch;}
+    table{width:100%;border-collapse:collapse;font-size:.72rem;min-width:500px;}
+    thead th{text-align:left;font-size:.6rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-tertiary);padding:0 .5rem .5rem;border-bottom:1px solid var(--border);}
+    tbody tr{transition:background .15s;cursor:pointer;}
+    tbody tr:hover{background:rgba(255,255,255,.025);}
+    td{padding:.6rem .5rem;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle;color:var(--text-secondary);}
+    .t-name{color:#fff;font-weight:600;font-size:.75rem;}
+    .t-sub{font-size:.62rem;color:var(--text-tertiary);margin-top:.1rem;}
+    .user-name{color:#fff;font-weight:600;font-size:.75rem;}
+    .user-email{font-size:.62rem;color:var(--text-tertiary);margin-top:.1rem;}
+    .region-tag{display:inline-block;font-size:.6rem;font-weight:600;padding:.15rem .45rem;border-radius:9999px;border:1px solid;}
+    .rank-badge{display:inline-block;font-size:.6rem;font-weight:700;padding:.15rem .5rem;border-radius:9999px;border:1px solid;background:rgba(255,255,255,.04);}
+    .type-col{font-size:.7rem;}
+    .date-col{font-size:.68rem;white-space:nowrap;}
+    .budget-col{font-weight:600;color:#fff;font-size:.72rem;}
+    .status-badge{display:inline-block;font-size:.6rem;font-weight:700;padding:.15rem .5rem;border-radius:9999px;}
+    .status-badge.status-active{background:rgba(34,197,94,.14);color:#86efac;}
+    .status-badge.status-field{background:rgba(212,175,55,.18);color:#f0d074;}
+    .status-badge.status-complete{background:rgba(148,163,184,.16);color:#cbd5e1;}
+    .status-badge.status-review{background:rgba(140,116,201,.2);color:#c9b6f0;}
+    .progress-wrap{display:flex;align-items:center;gap:.3rem;min-width:80px;}
+    .progress-bar{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:9999px;overflow:hidden;}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#f3dd8f);border-radius:9999px;}
+    .progress-pct{font-size:.62rem;color:var(--text-tertiary);flex-shrink:0;}
+    .project-count{font-family:'Playfair Display',serif;font-style:italic;font-weight:600;color:var(--accent);}
+
+    /* ============ Filter row / search ============ */
+    .filter-row{display:flex;gap:4px;flex-wrap:wrap;}
+    .search-box.card-search{min-width:0;max-width:100%;}
+
+    /* ============ Alerts ============ */
+    .alerts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;}
+    @media (max-width:700px){.alerts-grid{grid-template-columns:1fr;}}
+    .alert-item{display:flex;gap:.5rem;padding:.6rem .8rem;border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;transition:background .15s;}
+    .alert-item:hover{background:var(--surface-2);}
+    .alert-warning{background:rgba(245,158,11,.05);}
+    .alert-error{background:rgba(239,68,68,.05);}
+    .alert-success{background:rgba(34,197,94,.04);}
+    .alert-icon{font-size:.95rem;flex-shrink:0;}
+    .alert-message{font-size:.72rem;color:#fff;line-height:1.3;}
+    .alert-time{font-size:.6rem;color:var(--text-tertiary);margin-top:.15rem;display:block;}
+
+    /* ============ Donut + legend ============ */
+    .donut-chart{display:flex;justify-content:center;margin-bottom:0.6rem;}
+    .donut-svg{width:120px;height:120px;}
+    .donut-num{font-family:'Playfair Display',serif;font-style:italic;font-size:18px;fill:#fff;}
+    .donut-label{font-size:7px;fill:var(--text-tertiary);text-transform:uppercase;letter-spacing:.06em;}
+    .legend-list{list-style:none;display:flex;flex-direction:column;gap:.3rem;margin:0;padding:0;}
+    .legend-item{display:flex;align-items:center;gap:.4rem;padding:.3rem .4rem;border-radius:var(--radius-sm);cursor:pointer;transition:background .15s;}
+    .legend-item:hover{background:var(--surface-2);}
+    .legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+    .legend-label{flex:1;font-size:.7rem;color:var(--text-secondary);}
+    .legend-count{font-size:.7rem;font-weight:700;color:#fff;}
+
+    /* ============ Region list ============ */
+    .region-list{display:flex;flex-direction:column;gap:.6rem;}
+    .region-item{cursor:pointer;}
+    .region-header{display:flex;justify-content:space-between;margin-bottom:.25rem;}
+    .region-label{font-size:.72rem;color:#fff;font-weight:600;}
+    .region-value{font-size:.65rem;color:var(--text-tertiary);}
+    .region-bar{height:4px;background:rgba(255,255,255,.06);border-radius:9999px;overflow:hidden;}
+    .region-fill{height:100%;border-radius:9999px;transition:width 1s ease;}
+
+    /* ============ Approvals list (dashboard) ============ */
+    .approval-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.3rem;}
+    .approval-item{border:1px solid var(--border);border-radius:var(--radius-sm);padding:.6rem .7rem;cursor:pointer;transition:border-color .2s;}
+    .approval-item:hover{border-color:rgba(212,175,55,.3);}
+    .approval-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.2rem;}
+    .approval-id{font-family:monospace;font-size:.62rem;color:var(--text-tertiary);}
+    .priority-badge{font-size:.55rem;font-weight:700;padding:.1rem .4rem;border-radius:9999px;text-transform:uppercase;}
+    .priority-high{background:rgba(239,68,68,.16);color:#fca5a5;}
+    .priority-medium{background:rgba(245,158,11,.16);color:#fcd34d;}
+    .priority-low{background:rgba(148,163,184,.16);color:#cbd5e1;}
+    .approval-details{display:flex;justify-content:space-between;font-size:.68rem;margin-bottom:.15rem;flex-wrap:wrap;gap:3px;}
+    .approval-user{color:#fff;font-weight:600;}
+    .approval-type{color:var(--text-tertiary);}
+    .approval-footer{display:flex;justify-content:space-between;font-size:.62rem;color:var(--text-tertiary);flex-wrap:wrap;gap:3px;}
+
+    /* ============ Approval cards (approvals page) ============ */
+    .approval-card{display:flex;justify-content:space-between;align-items:center;gap:0.6rem;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.7rem .9rem;cursor:pointer;transition:border-color .2s;}
+    .approval-card:hover{border-color:rgba(212,175,55,.3);}
+    .approval-card-id{font-family:monospace;font-size:.6rem;color:var(--text-tertiary);}
+    .approval-card-user{font-weight:700;color:#fff;font-size:.8rem;margin-top:1px;}
+    .approval-card-details{font-size:.68rem;color:var(--text-secondary);margin-top:1px;}
+    .approval-card-right{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;}
+    .approval-card-date{font-size:.65rem;color:var(--text-tertiary);}
+
+    /* ============ Settings ============ */
+    .profile-section{display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
+    .profile-avatar{width:50px;height:50px;border-radius:50%;border:2px solid rgba(212,175,55,.4);object-fit:cover;}
+    .profile-name{font-weight:700;color:#fff;font-size:14px;}
+    .profile-email{font-size:11px;color:var(--text-secondary);margin-top:1px;}
+    .profile-badge{font-size:10px;color:var(--accent);margin-top:3px;}
+    .preferences-list{display:flex;flex-direction:column;}
+    .preference-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+    .preference-item:last-child{border-bottom:none;}
+    .preference-label{font-weight:700;color:#fff;font-size:12px;}
+    .preference-sub{font-size:11px;color:var(--text-tertiary);margin-top:1px;}
+    .toggle{width:36px;height:20px;border-radius:999px;background:rgba(255,255,255,.12);cursor:pointer;transition:background .3s;position:relative;flex-shrink:0;}
+    .toggle.toggle-active{background:var(--accent);}
+    .toggle-knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .3s;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+    .toggle.toggle-active .toggle-knob{left:18px;}
+    .language-select{background:var(--surface-2);border:1px solid var(--border);color:#fff;border-radius:6px;padding:5px 10px;font-size:11px;outline:none;font-family:inherit;}
+    .danger-zone{border-color:rgba(239,68,68,.25);}
+    .danger-actions{display:flex;gap:10px;flex-wrap:wrap;}
+
+    /* ============ Responsive ============ */
+    @media (max-width:960px){
+      .sidebar{position:fixed;left:0;top:0;z-index:45;transform:translateX(-100%);transition:transform .28s ease;will-change:transform;box-shadow:20px 0 40px rgba(0,0,0,.5);}
+      .sidebar.sidebar-open{transform:translateX(0);}
+      .sidebar-overlay{display:block;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;}
+      .close-btn{display:flex;}
+      .hamburger{display:flex;}
+      .search-box input{width:80px;}
+    }
+    @media (max-width:640px){
+      .topbar{padding:0.8rem 0.6rem;}
+      .content-area{padding:0.6rem 0.6rem 1.5rem;}
+      .search-box input{width:60px;font-size:0.6rem;}
+      .search-box{padding:0.2rem 0.5rem;}
+      .page-title h1{font-size:0.95rem;}
+      .card{padding:0.7rem;}
+      .welcome-banner{padding:0.7rem 0.9rem;flex-direction:column;align-items:flex-start;}
+      .welcome-text h2{font-size:1rem;}
+      .welcome-stats-mini{gap:0.5rem;flex-wrap:wrap;}
+      .mini-stat-value{font-size:0.9rem;}
+      .stats-grid{gap:0.5rem;}
+      .stat-card{padding:0.6rem 0.7rem;}
+      .stat-value{font-size:1.2rem;}
+      .bottom-grid{gap:0.5rem;}
+      .charts-grid{gap:0.5rem;}
+      .chart-card{padding:0.7rem;}
+      .donut-svg{width:100px;height:100px;}
+      .topbar-left{gap:0.4rem;}
+      .page-title p{display:none;}
+      .icon-btn{width:26px;height:26px;font-size:0.7rem;}
+      .notif-dot{top:5px;right:5px;width:4px;height:4px;}
+    }
+    @media (max-width:400px){
+      .search-box{display:none;}
+      .topbar{padding:0.8rem 0.5rem;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-root">
+  <div id="sidebarOverlay" class="sidebar-overlay" style="display:none;"></div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <span class="brand-logo-slot">
+          <img id="brand-logo-img" src="./Assets/Logo.webp" alt="Lumora logo" class="brand-logo-img"
+               onerror="this.onerror=null;this.style.display='none';document.getElementById('brand-logo-fallback').style.display='flex';">
+        </span>
+      </div>
+      <button class="close-btn" id="closeSidebarBtn" aria-label="Close sidebar">✕</button>
+    </div>
+    <div class="sidebar-section-label">MAIN MENU</div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <a href="Login.html" class="logout-full-btn">↪ Logout</a>
+  </aside>
+
+  <main class="main-content" id="mainContent">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="page-title">
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSub">Welcome back, Admin — network overview.</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input placeholder="Search…" />
+        </div>
+        <button class="icon-btn" aria-label="Notifications">🔔<span class="notif-dot"></span></button>
+      </div>
+    </header>
+
+    <div class="content-area" id="contentArea"></div>
+  </main>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// DATA — Lumora distributor-network admin dashboard
+// ─────────────────────────────────────────────────────────────
+
+const regionAccents = {
+  "North America": "#D4AF37",
+  "Europe": "#8B7FB8",
+  "APAC": "#4FB3BF",
+  "LATAM": "#C97B4A",
+  "MEA": "#B8860B",
+};
+
+const rankAccents = {
+  "Associate": "#94a3b8",
+  "Bronze Distributor": "#C97B4A",
+  "Silver Distributor": "#B8BEC7",
+  "Gold Distributor": "#D4AF37",
+  "Platinum Leader": "#8FD3E8",
+  "Diamond Director": "#7FD1D9",
+  "Crown Ambassador": "#C77DFF",
+};
+
+const teamsData = [
+  { id: 1, name: "North America Alpha Network", region: "North America", site: "New York, NY", type: "Direct Downline", status: "Active", progress: 72, endDate: "Dec 2025", budget: "$450,000", director: "Amara Whitfield" },
+  { id: 2, name: "Europe Rising Circle", region: "Europe", site: "Berlin, DE", type: "Regional Network", status: "Growing", progress: 38, endDate: "Aug 2025", budget: "$320,000", director: "Julian Cross" },
+  { id: 3, name: "APAC Legacy Group", region: "APAC", site: "Singapore", type: "Regional Network", status: "Established", progress: 100, endDate: "Mar 2025", budget: "$580,000", director: "Priya Nandan" },
+  { id: 4, name: "LATAM Vanguard Team", region: "LATAM", site: "São Paulo, BR", type: "Direct Downline", status: "Active", progress: 55, endDate: "Nov 2025", budget: "$390,000", director: "Marcus DeLuca" },
+  { id: 5, name: "MEA Horizon Network", region: "MEA", site: "Dubai, AE", type: "Regional Network", status: "Under Review", progress: 89, endDate: "Jul 2025", budget: "$275,000", director: "Fatima Idris" },
+  { id: 6, name: "North America Summit Group", region: "North America", site: "Austin, TX", type: "Direct Downline", status: "Active", progress: 61, endDate: "Oct 2025", budget: "$520,000", director: "Renee Okafor" },
+  { id: 7, name: "LATAM Pioneers Circle", region: "LATAM", site: "Bogotá, CO", type: "Regional Network", status: "Growing", progress: 45, endDate: "Sep 2025", budget: "$310,000", director: "Diego Salas" },
+];
+
+const adminStats = {
+  totalDistributors: 2847,
+  activeDistributors: 1892,
+  totalTeams: 47,
+  totalProducts: 128,
+  totalCommissions: 2845000,
+  pendingApprovals: 23,
+  monthlyGrowth: 12.4,
+  completionRate: 68,
+};
+
+const recentDistributors = [
+  { name: "Amara Whitfield", email: "amara.w@lumora.com", role: "Diamond Director", status: "active", joinDate: "2025-01-15", projects: 42 },
+  { name: "Julian Cross", email: "julian.c@lumora.com", role: "Gold Distributor", status: "active", joinDate: "2025-01-12", projects: 18 },
+  { name: "Priya Nandan", email: "priya.n@lumora.com", role: "Platinum Leader", status: "pending", joinDate: "2025-01-10", projects: 0 },
+  { name: "Marcus DeLuca", email: "marcus.d@lumora.com", role: "Silver Distributor", status: "active", joinDate: "2025-01-08", projects: 9 },
+  { name: "Fatima Idris", email: "fatima.i@lumora.com", role: "Bronze Distributor", status: "inactive", joinDate: "2025-01-05", projects: 3 },
+  { name: "Renee Okafor", email: "renee.o@lumora.com", role: "Crown Ambassador", status: "active", joinDate: "2025-01-03", projects: 65 },
+];
+
+const pendingApprovalsList = [
+  { id: "REQ-001", user: "Priya Nandan", type: "Rank Advancement Request", site: "APAC Legacy Group", submitted: "2025-01-18", priority: "high" },
+  { id: "REQ-002", user: "Diego Salas", type: "Commission Payout Increase", site: "LATAM Pioneers Circle", submitted: "2025-01-17", priority: "medium" },
+  { id: "REQ-003", user: "Renee Okafor", type: "New Team Addition", site: "North America Summit Group", submitted: "2025-01-16", priority: "low" },
+  { id: "REQ-004", user: "Marcus DeLuca", type: "Product Restock Request", site: "LATAM Vanguard Team", submitted: "2025-01-15", priority: "high" },
+  { id: "REQ-005", user: "Amara Whitfield", type: "Bonus Payout Approval", site: "North America Alpha Network", submitted: "2025-01-14", priority: "medium" },
+];
+
+const systemAlerts = [
+  { type: "warning", message: "Commission pool at 85% of monthly cap", time: "2h ago" },
+  { type: "info", message: "New distributor sign-up spike detected", time: "4h ago" },
+  { type: "success", message: "Payout batch processed successfully", time: "Yesterday" },
+  { type: "error", message: "Compliance review flagged for 2 accounts", time: "Yesterday" },
+];
+
+const distributorGrowthData = [45, 52, 48, 63, 71, 89, 95, 102, 115, 128, 142, 156];
+const monthlyCommissions = [284, 312, 298, 345, 389, 412, 435, 468, 492, 525, 548, 572];
+
+const teamStatusBreakdown = [
+  { label: "Active", value: 28, color: "#D4AF37" },
+  { label: "Growing", value: 12, color: "#f59e0b" },
+  { label: "Under Review", value: 4, color: "#8B7FB8" },
+  { label: "Established", value: 3, color: "#22c55e" },
+];
+
+const regionDistribution = [
+  { label: "North America", value: 8, color: "#D4AF37" },
+  { label: "Europe", value: 6, color: "#8B7FB8" },
+  { label: "APAC", value: 5, color: "#4FB3BF" },
+  { label: "LATAM", value: 4, color: "#C97B4A" },
+  { label: "MEA", value: 3, color: "#B8860B" },
+];
+
+const productsData = [
+  { id: "PRD-001", name: "Luminous Radiance Serum", category: "Skincare", line: "Elevate Collection", launched: "2023", stock: "In Stock", status: "Bestseller" },
+  { id: "PRD-002", name: "Vitality Boost Capsules", category: "Wellness", line: "Core Essentials", launched: "2022", stock: "Low Stock", status: "Active" },
+  { id: "PRD-003", name: "Silk Repair Hair Oil", category: "Haircare", line: "Elevate Collection", launched: "2024", stock: "In Stock", status: "Active" },
+  { id: "PRD-004", name: "Pure Balance Protein Blend", category: "Wellness", line: "Core Essentials", launched: "2021", stock: "In Stock", status: "Active" },
+  { id: "PRD-005", name: "Renew Overnight Mask", category: "Skincare", line: "Elevate Collection", launched: "2024", stock: "Backordered", status: "Active" },
+  { id: "PRD-006", name: "Citrus Detox Tea", category: "Wellness", line: "Seasonal Line", launched: "2025", stock: "In Stock", status: "New" },
+  { id: "PRD-007", name: "Golden Hour Body Oil", category: "Skincare", line: "Elevate Collection", launched: "2022", stock: "Discontinued", status: "Retired" },
+  { id: "PRD-008", name: "Focus & Flow Nootropic", category: "Wellness", line: "Core Essentials", launched: "2023", stock: "In Stock", status: "Active" },
+];
+
+const stockColor = { "In Stock": "#22c55e", "Low Stock": "#f59e0b", "Backordered": "#ef4444", "Discontinued": "#94a3b8" };
+const productStatusColor = { Bestseller: "#D4AF37", Active: "#22c55e", New: "#4FB3BF", Retired: "#94a3b8" };
+
+const commissionData = [
+  { site: "North America Alpha Network", allocated: 450000, spent: 284000, region: "North America" },
+  { site: "Europe Rising Circle", allocated: 320000, spent: 108000, region: "Europe" },
+  { site: "APAC Legacy Group", allocated: 580000, spent: 580000, region: "APAC" },
+  { site: "LATAM Vanguard Team", allocated: 390000, spent: 201000, region: "LATAM" },
+  { site: "MEA Horizon Network", allocated: 275000, spent: 241000, region: "MEA" },
+  { site: "North America Summit Group", allocated: 520000, spent: 298000, region: "North America" },
+  { site: "LATAM Pioneers Circle", allocated: 310000, spent: 132000, region: "LATAM" },
+];
+
+const navItems = [
+  { icon: "▦", label: "Dashboard", id: "dashboard" },
+  { icon: "👥", label: "Distributors", id: "distributors" },
+  { icon: "🌐", label: "Teams", id: "teams" },
+  { icon: "📦", label: "Products", id: "products" },
+  { icon: "💰", label: "Commissions", id: "commissions" },
+  { icon: "✅", label: "Approvals", id: "approvals" },
+  { icon: "⚙️", label: "Settings", id: "settings" },
+];
+
+const statusColors = {
+  Active: "status-active",
+  Growing: "status-field",
+  Established: "status-complete",
+  "Under Review": "status-review",
+};
+
+function fmt(n) { return "$" + n.toLocaleString(); }
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+const pageMap = {
+  dashboard: { title: "Dashboard", sub: "Welcome back, Admin — network overview.", render: renderDashboardPage },
+  distributors: { title: "Distributors", sub: "Manage all registered distributors and ranks.", render: renderDistributorsPage },
+  teams: { title: "Teams", sub: "All active and established downline networks.", render: renderTeamsPage },
+  products: { title: "Products", sub: "Catalog of all Lumora product lines.", render: renderProductsPage },
+  commissions: { title: "Commissions", sub: "Payout allocation and spend tracking.", render: renderCommissionsPage },
+  approvals: { title: "Approvals", sub: "Review and manage pending requests.", render: renderApprovalsPage },
+  settings: { title: "Settings", sub: "Account preferences and configuration.", render: renderSettingsPage },
+};
+
+// ─────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────
+let activeNav = "dashboard";
+let sidebarOpen = false;
+let distributorSearch = "";
+let distributorRoleFilter = "All";
+let teamFilter = "All";
+let productSearch = "";
+let settingsState = { notifications: true, emailDigest: false, darkMode: true, language: "English" };
+
+// ─────────────────────────────────────────────────────────────
+// PAGE RENDERERS
+// ─────────────────────────────────────────────────────────────
+
+function statCard(s) {
+  return `
+    <div class="stat-card ${s.accent ? "stat-accent" : ""}">
+      <div class="stat-top">
+        <span class="stat-icon">${s.icon}</span>
+        ${s.change ? `<span class="stat-delta ${s.change.startsWith("+") ? "up" : ""}">${s.change}</span>` : ""}
+      </div>
+      <div class="stat-value" ${s.small ? 'style="font-size:1.2rem;"' : ""}>${s.value}</div>
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-bar"><div class="stat-bar-fill" style="width:${s.bar}%"></div></div>
+    </div>`;
+}
+
+function renderDashboardPage() {
+  const stats = [
+    { icon: "👥", value: adminStats.totalDistributors.toLocaleString(), label: "Total Distributors", change: "+12.4%", bar: 85, accent: true },
+    { icon: "🟢", value: adminStats.activeDistributors.toLocaleString(), label: "Active Distributors", change: "+8.2%", bar: 66 },
+    { icon: "🌐", value: adminStats.totalTeams, label: "Total Teams", change: "+3", bar: 70 },
+    { icon: "📦", value: adminStats.totalProducts.toLocaleString(), label: "Products", change: "+6", bar: 78 },
+    { icon: "💰", value: fmt(adminStats.totalCommissions), label: "Total Commissions Paid", change: "+$24K", bar: 90, accent: true },
+    { icon: "⏳", value: adminStats.pendingApprovals, label: "Pending Approvals", change: "+5", bar: 45 },
+  ];
+
+  const maxGrowth = Math.max(...distributorGrowthData);
+  const growthLines = distributorGrowthData.map((_, i) => {
+    if (i >= distributorGrowthData.length - 1) return "";
+    const x = (i / (distributorGrowthData.length - 1)) * 480 + 10;
+    const y1 = 190 - (distributorGrowthData[i] / maxGrowth) * 170;
+    const x2 = x + 480 / (distributorGrowthData.length - 1);
+    const y2 = 190 - (distributorGrowthData[i + 1] / maxGrowth) * 170;
+    return `<line x1="${x}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round"/>`;
+  }).join("");
+  const growthPoints = distributorGrowthData.map((d, i) => {
+    const x = (i / (distributorGrowthData.length - 1)) * 480 + 10;
+    const y = 190 - (d / maxGrowth) * 170;
+    return `<circle cx="${x}" cy="${y}" r="4" fill="#D4AF37" stroke="#fff" stroke-width="1.5"/>`;
+  }).join("");
+  const growthPolygon = "10,190 " + distributorGrowthData.map((d, i) => {
+    const x = (i / (distributorGrowthData.length - 1)) * 480 + 10;
+    const y = 190 - (d / maxGrowth) * 170;
+    return `${x},${y}`;
+  }).join(" ") + " 490,190";
+
+  const months = ["J","F","M","A","M","J","J","A","S","O","N","D"];
+  const monthLabels = months.map((m, i) => `<text x="${10 + i * 40}" y="195" fill="rgba(255,255,255,0.3)" font-size="10">${m}</text>`).join("");
+
+  const maxRev = Math.max(...monthlyCommissions);
+  const revBars = monthlyCommissions.map((d, i) => {
+    const x = (i / (monthlyCommissions.length - 1)) * 480 + 10;
+    const h = (d / maxRev) * 170;
+    return `<rect x="${x - 8}" y="${190 - h}" width="16" height="${h}" rx="3" fill="${d > 500 ? "#D4AF37" : "rgba(212,175,55,0.5)"}" class="bar-animate"><title>${d}</title></rect>`;
+  }).join("");
+
+  // donut
+  const totalStatus = teamStatusBreakdown.reduce((s, p) => s + p.value, 0);
+  let acc = 0;
+  const donutPaths = teamStatusBreakdown.map((item, i) => {
+    const start = acc;
+    const end = start + (item.value / totalStatus) * Math.PI * 2;
+    const x1 = 60 + 45 * Math.cos(start), y1 = 60 + 45 * Math.sin(start);
+    const x2 = 60 + 45 * Math.cos(end), y2 = 60 + 45 * Math.sin(end);
+    const large = end - start > Math.PI ? 1 : 0;
+    acc = end;
+    return `<path d="M ${x1} ${y1} A 45 45 0 ${large} 1 ${x2} ${y2} L 60 60" fill="${item.color}" opacity="0.9"/>`;
+  }).join("");
+
+  const legendItems = teamStatusBreakdown.map(l => `
+    <li class="legend-item"><span class="legend-dot" style="background:${l.color}"></span><span class="legend-label">${l.label}</span><span class="legend-count">${l.value}</span></li>`).join("");
+
+  const approvalItems = pendingApprovalsList.map(req => `
+    <li class="approval-item">
+      <div class="approval-header"><span class="approval-id">${req.id}</span><span class="priority-badge priority-${req.priority}">${req.priority}</span></div>
+      <div class="approval-details"><span class="approval-user">${esc(req.user)}</span><span class="approval-type">${esc(req.type)}</span></div>
+      <div class="approval-footer"><span class="approval-site">${esc(req.site)}</span><span class="approval-date">${req.submitted}</span></div>
+    </li>`).join("");
+
+  const maxRegion = Math.max(...regionDistribution.map(r => r.value));
+  const regionItems = regionDistribution.map(region => `
+    <div class="region-item">
+      <div class="region-header"><span class="region-label">${region.label}</span><span class="region-value">${region.value} teams</span></div>
+      <div class="region-bar"><div class="region-fill" style="width:${(region.value / maxRegion) * 100}%;background:${region.color}"></div></div>
+    </div>`).join("");
+
+  const userRows = recentDistributors.map(user => `
+    <tr>
+      <td><div class="user-name">${esc(user.name)}</div><div class="user-email">${esc(user.email)}</div></td>
+      <td><span class="rank-badge" style="color:${rankAccents[user.role]};border-color:${rankAccents[user.role]}">${esc(user.role)}</span></td>
+      <td><span class="status-badge ${user.status === "active" ? "status-active" : user.status === "pending" ? "status-field" : "status-review"}">${user.status}</span></td>
+      <td>${user.joinDate}</td>
+      <td><span class="project-count">${user.projects}</span></td>
+      <td><button class="btn-icon">👁️</button><button class="btn-icon">✏️</button></td>
+    </tr>`).join("");
+
+  const alertItems = systemAlerts.map(a => `
+    <div class="alert-item alert-${a.type}">
+      <div class="alert-icon">${a.type === "warning" ? "⚠️" : a.type === "error" ? "🔴" : a.type === "success" ? "✅" : "ℹ️"}</div>
+      <div class="alert-content"><div class="alert-message">${esc(a.message)}</div><div class="alert-time">${a.time}</div></div>
+    </div>`).join("");
+
+  return `
+    <div class="welcome-banner">
+      <div class="welcome-text"><h2>Welcome back, Admin 👋</h2></div>
+      <div class="welcome-stats-mini">
+        <div class="mini-stat"><span class="mini-stat-value">${adminStats.totalDistributors.toLocaleString()}</span><span class="mini-stat-label">Distributors</span></div>
+        <div class="mini-stat-divider"></div>
+        <div class="mini-stat"><span class="mini-stat-value">${adminStats.totalTeams}</span><span class="mini-stat-label">Teams</span></div>
+        <div class="mini-stat-divider"></div>
+        <div class="mini-stat"><span class="mini-stat-value">${fmt(adminStats.totalCommissions)}</span><span class="mini-stat-label">Commissions</span></div>
+      </div>
+    </div>
+
+    <section class="stats-grid">${stats.map(statCard).join("")}</section>
+
+    <section class="charts-grid">
+      <div class="card chart-card">
+        <div class="card-header">
+          <div><h2 class="card-title">Distributor Growth</h2><p class="card-sub">Monthly new sign-ups</p></div>
+          <div class="chart-controls"><button class="btn-outline btn-sm active">Year</button><button class="btn-outline btn-sm">Month</button></div>
+        </div>
+        <div class="chart-container">
+          <svg viewBox="0 0 500 200" class="chart-svg">
+            <defs><linearGradient id="growthGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#D4AF37" stop-opacity="0.3"/><stop offset="100%" stop-color="#D4AF37" stop-opacity="0"/></linearGradient></defs>
+            ${growthLines}
+            <polygon points="${growthPolygon}" fill="url(#growthGrad)"/>
+            ${growthPoints}
+            ${monthLabels}
+          </svg>
+        </div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-header">
+          <div><h2 class="card-title">Commission Payouts</h2><p class="card-sub">Monthly payouts ($000s)</p></div>
+          <button class="btn-outline btn-sm">View All</button>
+        </div>
+        <div class="chart-container">
+          <svg viewBox="0 0 500 200" class="chart-svg">${revBars}${monthLabels}</svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="bottom-grid">
+      <div class="card">
+        <div class="card-header"><div><h2 class="card-title">Team Status</h2><p class="card-sub">Distribution by phase</p></div></div>
+        <div class="donut-chart">
+          <svg viewBox="0 0 120 120" class="donut-svg">
+            <circle cx="60" cy="60" r="45" fill="none" stroke="#1a1522" stroke-width="12"/>
+            ${donutPaths}
+            <text x="60" y="56" text-anchor="middle" class="donut-num">${totalStatus}</text>
+            <text x="60" y="68" text-anchor="middle" class="donut-label">Teams</text>
+          </svg>
+        </div>
+        <ul class="legend-list">${legendItems}</ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div><h2 class="card-title">Pending Approvals</h2><p class="card-sub">Requiring your attention</p></div><button class="btn-outline btn-sm">View All</button></div>
+        <ul class="approval-list">${approvalItems}</ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div><h2 class="card-title">Region Distribution</h2><p class="card-sub">Teams by region</p></div></div>
+        <div class="region-list">${regionItems}</div>
+      </div>
+    </section>
+
+    <div class="card full-width">
+      <div class="card-header"><div><h2 class="card-title">Recent Distributors</h2><p class="card-sub">Latest registrations and activity</p></div><button class="btn-primary btn-sm">View All →</button></div>
+      <div class="table-wrapper">
+        <table><thead><tr><th>Distributor</th><th>Rank</th><th>Status</th><th>Join Date</th><th>Team Size</th><th>Action</th></tr></thead>
+        <tbody>${userRows}</tbody></table>
+      </div>
+    </div>
+
+    <div class="card full-width">
+      <div class="card-header"><div><h2 class="card-title">System Alerts</h2><p class="card-sub">Platform notifications</p></div><button class="btn-outline btn-sm">Mark All Read</button></div>
+      <div class="alerts-grid">${alertItems}</div>
+    </div>
+  `;
+}
+
+function renderDistributorsPage() {
+  const roles = ["All", "Diamond Director", "Gold Distributor", "Platinum Leader", "Silver Distributor", "Bronze Distributor", "Crown Ambassador"];
+  const filtered = recentDistributors.filter(u => {
+    const matchesSearch = u.name.toLowerCase().includes(distributorSearch.toLowerCase()) || u.email.toLowerCase().includes(distributorSearch.toLowerCase());
+    const matchesRole = distributorRoleFilter === "All" || u.role === distributorRoleFilter;
+    return matchesSearch && matchesRole;
+  });
+
+  const stats = [
+    { icon: "👥", value: adminStats.totalDistributors.toLocaleString(), label: "Total Distributors", bar: 85, accent: true },
+    { icon: "🟢", value: adminStats.activeDistributors.toLocaleString(), label: "Active Distributors", bar: 66 },
+    { icon: "⏳", value: recentDistributors.filter(u => u.status === "pending").length, label: "Pending", bar: 20 },
+    { icon: "📊", value: adminStats.monthlyGrowth + "%", label: "Growth Rate", bar: 75 },
+  ];
+
+  const rows = filtered.map(user => `
+    <tr>
+      <td><div class="user-name">${esc(user.name)}</div><div class="user-email">${esc(user.email)}</div></td>
+      <td><span class="rank-badge" style="color:${rankAccents[user.role]};border-color:${rankAccents[user.role]}">${esc(user.role)}</span></td>
+      <td><span class="status-badge ${user.status === "active" ? "status-active" : user.status === "pending" ? "status-field" : "status-review"}">${user.status}</span></td>
+      <td>${user.joinDate}</td>
+      <td><span class="project-count">${user.projects}</span></td>
+      <td><button class="btn-icon">👁️</button><button class="btn-icon">✏️</button><button class="btn-icon">🗑️</button></td>
+    </tr>`).join("");
+
+  return `
+    <section class="stats-grid">${stats.map(statCard).join("")}</section>
+    <div class="card">
+      <div class="card-header">
+        <div><h2 class="card-title">Distributor Management</h2><p class="card-sub">All registered distributors</p></div>
+        <div class="search-box card-search"><span class="search-icon">🔍</span><input id="distributorSearchInput" placeholder="Search distributors…" value="${esc(distributorSearch)}"/></div>
+      </div>
+      <div class="filter-row" style="margin-bottom:10px;">
+        ${roles.map(r => `<button class="btn-outline role-filter-btn ${distributorRoleFilter === r ? "btn-active" : ""}" data-role="${esc(r)}">${esc(r)}</button>`).join("")}
+      </div>
+      <div class="table-wrapper"><table><thead><tr><th>Distributor</th><th>Rank</th><th>Status</th><th>Join Date</th><th>Team Size</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table></div>
+    </div>
+  `;
+}
+
+function renderTeamsPage() {
+  const statuses = ["All", "Active", "Growing", "Under Review", "Established"];
+  const filtered = teamFilter === "All" ? teamsData : teamsData.filter(t => t.status === teamFilter);
+
+  const stats = [
+    { icon: "🌐", value: teamsData.length, label: "Sample Teams", bar: 100, accent: true },
+    { icon: "🟢", value: teamsData.filter(t => t.status === "Active").length, label: "Active", bar: 60 },
+    { icon: "📈", value: teamsData.filter(t => t.status === "Growing").length, label: "Growing", bar: 40 },
+    { icon: "✅", value: teamsData.filter(t => t.status === "Established").length, label: "Established", bar: 20 },
+  ];
+
+  const rows = filtered.map(t => `
+    <tr>
+      <td><div class="t-name">${esc(t.name)}</div><div class="t-sub">${esc(t.site)}</div></td>
+      <td><span class="region-tag" style="color:${regionAccents[t.region]};border-color:${regionAccents[t.region]};background:${regionAccents[t.region]}1f">${t.region}</span></td>
+      <td class="type-col">${esc(t.type)}</td>
+      <td><span class="status-badge ${statusColors[t.status]}">${t.status}</span></td>
+      <td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:${t.progress}%"></div></div><span class="progress-pct">${t.progress}%</span></div></td>
+      <td class="date-col" style="font-size:11px;">${esc(t.director)}</td>
+      <td class="budget-col">${t.budget}</td>
+    </tr>`).join("");
+
+  return `
+    <section class="stats-grid">${stats.map(statCard).join("")}</section>
+    <div class="card">
+      <div class="card-header">
+        <div><h2 class="card-title">All Teams</h2><p class="card-sub">Full list of distributor networks</p></div>
+        <div class="filter-row">${statuses.map(s => `<button class="btn-outline team-filter-btn ${teamFilter === s ? "btn-active" : ""}" data-status="${esc(s)}">${esc(s)}</button>`).join("")}</div>
+      </div>
+      <div class="table-wrapper"><table><thead><tr><th>Team</th><th>Region</th><th>Type</th><th>Status</th><th>Progress</th><th>Leader</th><th>Volume</th></tr></thead><tbody>${rows}</tbody></table></div>
+    </div>
+  `;
+}
+
+function renderProductsPage() {
+  const filtered = productsData.filter(p => p.name.toLowerCase().includes(productSearch.toLowerCase()) || p.category.toLowerCase().includes(productSearch.toLowerCase()));
+
+  const stats = [
+    { icon: "📦", value: adminStats.totalProducts.toLocaleString(), label: "Total Products", bar: 75, accent: true },
+    { icon: "🔥", value: productsData.filter(p => p.status === "Bestseller").length, label: "Bestsellers", bar: 55 },
+    { icon: "🆕", value: productsData.filter(p => p.status === "New").length, label: "New Launches", bar: 30 },
+    { icon: "⚠️", value: productsData.filter(p => p.stock === "Low Stock" || p.stock === "Backordered").length, label: "Needs Restock", bar: 20 },
+  ];
+
+  const rows = filtered.map(p => `
+    <tr>
+      <td class="type-col" style="font-size:10px;font-family:monospace;">${p.id}</td>
+      <td><div class="t-name">${esc(p.name)}</div><div class="t-sub">${esc(p.category)}</div></td>
+      <td class="date-col">${esc(p.line)}</td>
+      <td class="date-col">${p.launched}</td>
+      <td><span style="color:${stockColor[p.stock]};font-weight:700;font-size:11px;">${p.stock}</span></td>
+      <td><span class="status-badge" style="background:${productStatusColor[p.status]}22;color:${productStatusColor[p.status]}">${p.status}</span></td>
+    </tr>`).join("");
+
+  return `
+    <section class="stats-grid">${stats.map(statCard).join("")}</section>
+    <div class="card">
+      <div class="card-header">
+        <div><h2 class="card-title">Product Catalog</h2><p class="card-sub">All Lumora product lines</p></div>
+        <div class="search-box card-search"><span class="search-icon">🔍</span><input id="productSearchInput" placeholder="Search products…" value="${esc(productSearch)}"/></div>
+      </div>
+      <div class="table-wrapper"><table><thead><tr><th>ID</th><th>Product</th><th>Line</th><th>Launched</th><th>Stock</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>
+    </div>
+  `;
+}
+
+function renderCommissionsPage() {
+  const totalAllocated = commissionData.reduce((a, b) => a + b.allocated, 0);
+  const totalSpent = commissionData.reduce((a, b) => a + b.spent, 0);
+  const remaining = totalAllocated - totalSpent;
+  const utilisation = Math.round((totalSpent / totalAllocated) * 100);
+
+  const stats = [
+    { icon: "💰", value: fmt(totalAllocated), label: "Total Allocated", bar: 100, accent: true, small: true },
+    { icon: "📈", value: fmt(totalSpent), label: "Paid Out", bar: utilisation, small: true },
+    { icon: "✅", value: fmt(remaining), label: "Remaining", bar: 100 - utilisation, small: true },
+    { icon: "📊", value: utilisation + "%", label: "Utilisation", bar: utilisation, small: true },
+  ];
+
+  const rows = commissionData.map(b => {
+    const pct = Math.round((b.spent / b.allocated) * 100);
+    return `
+      <div>
+        <div class="budget-row-header">
+          <div><span style="font-weight:700;color:#fff;font-size:12px;">${esc(b.site)}</span>
+            <span class="region-tag" style="margin-left:8px;color:${regionAccents[b.region]};border-color:${regionAccents[b.region]};background:${regionAccents[b.region]}1f;font-size:10px;">${b.region}</span>
+          </div>
+          <div style="text-align:right;font-size:11px;color:rgba(247,245,242,0.65);">
+            <span style="color:#fff;font-weight:700;">${fmt(b.spent)}</span> / ${fmt(b.allocated)}
+            <span style="margin-left:8px;color:${pct > 80 ? "#fca5a5" : "#D4AF37"};font-weight:700;">${pct}%</span>
+          </div>
+        </div>
+        <div style="height:6px;background:rgba(255,255,255,0.07);border-radius:999px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:${pct > 85 ? "linear-gradient(90deg,#ef4444,#f87171)" : "linear-gradient(90deg,#D4AF37,#f3dd8f)"};border-radius:999px;transition:width 1.5s ease;"></div>
+        </div>
+      </div>`;
+  }).join("");
+
+  return `
+    <section class="stats-grid">${stats.map(statCard).join("")}</section>
+    <div class="card">
+      <div class="card-header"><div><h2 class="card-title">Commissions by Team</h2><p class="card-sub">Allocation vs payout</p></div></div>
+      <div style="display:flex;flex-direction:column;gap:14px;">${rows}</div>
+    </div>
+  `;
+}
+
+function renderApprovalsPage() {
+  const stats = [
+    { icon: "⏳", value: adminStats.pendingApprovals, label: "Pending", bar: 45, accent: true },
+    { icon: "✅", value: "142", label: "Approved This Month", bar: 75 },
+    { icon: "❌", value: "23", label: "Rejected", bar: 20 },
+    { icon: "📊", value: "86%", label: "Approval Rate", bar: 86 },
+  ];
+
+  const cards = pendingApprovalsList.map(req => `
+    <div class="approval-card">
+      <div class="approval-card-left">
+        <div class="approval-card-id">${req.id}</div>
+        <div class="approval-card-user">${esc(req.user)}</div>
+        <div class="approval-card-details">${esc(req.type)} · ${esc(req.site)}</div>
+      </div>
+      <div class="approval-card-right">
+        <span class="priority-badge priority-${req.priority}">${req.priority}</span>
+        <span class="approval-card-date">${req.submitted}</span>
+        <div class="approval-card-actions"><button class="btn-approve">✓ Approve</button><button class="btn-reject">✕ Reject</button></div>
+      </div>
+    </div>`).join("");
+
+  return `
+    <section class="stats-grid">${stats.map(statCard).join("")}</section>
+    <div class="card">
+      <div class="card-header"><div><h2 class="card-title">Pending Approvals</h2><p class="card-sub">Requests awaiting your review</p></div></div>
+      <div style="display:flex;flex-direction:column;gap:10px;">${cards}</div>
+    </div>
+  `;
+}
+
+function renderSettingsPage() {
+  const toggleRow = (key, label, sub) => `
+    <div class="preference-item">
+      <div><div class="preference-label">${label}</div><div class="preference-sub">${sub}</div></div>
+      <div class="toggle ${settingsState[key] ? "toggle-active" : ""}" data-toggle="${key}"><div class="toggle-knob"></div></div>
+    </div>`;
+
+  return `
+    <div class="card">
+      <div class="card-header"><div><h2 class="card-title">Account</h2><p class="card-sub">Your profile information</p></div></div>
+      <div class="profile-section">
+        <img src="https://placehold.co/80x80/1a1522/D4AF37?text=AD" alt="avatar" class="profile-avatar"/>
+        <div class="profile-info">
+          <div class="profile-name">Admin User</div>
+          <div class="profile-email">Network Administrator · admin@lumora.com</div>
+          <div class="profile-badge">🛡️ Super Admin</div>
+        </div>
+        <button class="btn-primary btn-sm">Edit Profile</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div><h2 class="card-title">Preferences</h2><p class="card-sub">Notifications and display</p></div></div>
+      <div class="preferences-list">
+        ${toggleRow("notifications", "Push Notifications", "Receive alerts for payouts and rank advancements")}
+        ${toggleRow("emailDigest", "Weekly Email Digest", "Summary of network activity")}
+        ${toggleRow("darkMode", "Dark Mode", "Use dark colour scheme across the dashboard")}
+        <div class="preference-item">
+          <div><div class="preference-label">Language</div><div class="preference-sub">Interface display language</div></div>
+          <select class="language-select" id="languageSelect">
+            ${["English", "French", "Spanish", "Arabic", "Portuguese"].map(l => `<option ${settingsState.language === l ? "selected" : ""}>${l}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card danger-zone">
+      <div class="card-header"><div><h2 class="card-title">Danger Zone</h2><p class="card-sub">Irreversible account actions</p></div></div>
+      <div class="danger-actions"><button class="btn-danger">Reset Password</button><button class="btn-danger">Delete Account</button></div>
+    </div>
+  `;
+}
+
+// ─────────────────────────────────────────────────────────────
+// RENDER / WIRE-UP
+// ─────────────────────────────────────────────────────────────
+
+function renderSidebarNav() {
+  const nav = document.getElementById("sidebarNav");
+  nav.innerHTML = navItems.map(item => `
+    <button class="nav-item ${activeNav === item.id ? "nav-active" : ""}" data-nav="${item.id}">
+      <span class="nav-icon">${item.icon}</span><span>${item.label}</span>
+      ${item.id === "approvals" ? `<span class="nav-badge">${adminStats.pendingApprovals}</span>` : ""}
+    </button>`).join("");
+
+  nav.querySelectorAll("[data-nav]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeNav = btn.getAttribute("data-nav");
+      sidebarOpen = false;
+      renderAll();
+      const main = document.getElementById("mainContent");
+      if (main) main.scrollTop = 0;
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    });
+  });
+}
+
+function renderTopbar() {
+  const page = pageMap[activeNav];
+  document.getElementById("pageTitle").textContent = page.title;
+  document.getElementById("pageSub").textContent = page.sub;
+}
+
+function renderContent() {
+  const page = pageMap[activeNav];
+  const area = document.getElementById("contentArea");
+  area.innerHTML = page.render();
+  wirePageControls();
+}
+
+function renderSidebarState() {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  sidebar.classList.toggle("sidebar-open", sidebarOpen);
+  overlay.style.display = sidebarOpen ? "block" : "none";
+}
+
+function wirePageControls() {
+  const distSearch = document.getElementById("distributorSearchInput");
+  if (distSearch) {
+    distSearch.addEventListener("input", (e) => {
+      distributorSearch = e.target.value;
+      renderContent();
+      const el = document.getElementById("distributorSearchInput");
+      if (el) { el.focus(); el.selectionStart = el.selectionEnd = el.value.length; }
+    });
+  }
+  document.querySelectorAll(".role-filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      distributorRoleFilter = btn.getAttribute("data-role");
+      renderContent();
+    });
+  });
+
+  document.querySelectorAll(".team-filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      teamFilter = btn.getAttribute("data-status");
+      renderContent();
+    });
+  });
+
+  const prodSearch = document.getElementById("productSearchInput");
+  if (prodSearch) {
+    prodSearch.addEventListener("input", (e) => {
+      productSearch = e.target.value;
+      renderContent();
+      const el = document.getElementById("productSearchInput");
+      if (el) { el.focus(); el.selectionStart = el.selectionEnd = el.value.length; }
+    });
+  }
+
+  document.querySelectorAll("[data-toggle]").forEach(t => {
+    t.addEventListener("click", () => {
+      const key = t.getAttribute("data-toggle");
+      settingsState[key] = !settingsState[key];
+      renderContent();
+    });
+  });
+  const langSelect = document.getElementById("languageSelect");
+  if (langSelect) {
+    langSelect.addEventListener("change", (e) => { settingsState.language = e.target.value; });
+  }
+}
+
+function renderAll() {
+  renderSidebarNav();
+  renderTopbar();
+  renderContent();
+  renderSidebarState();
+}
+
+document.getElementById("hamburgerBtn").addEventListener("click", () => { sidebarOpen = true; renderSidebarState(); });
+document.getElementById("closeSidebarBtn").addEventListener("click", () => { sidebarOpen = false; renderSidebarState(); });
+document.getElementById("sidebarOverlay").addEventListener("click", () => { sidebarOpen = false; renderSidebarState(); });
+
+renderAll();
+</script>
+</body>
+</html>
