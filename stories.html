@@ -92,6 +92,7 @@
     .mobile-sheet .roll-btn { width: 100%; justify-content: center; }
 
     /* badge */
+    .badge-row { display: flex; justify-content: center; margin-bottom: 18px; }
     .badge-pill {
       display: inline-block; padding: 7px 16px; border-radius: 999px;
       background: var(--orange-tint); color: var(--orange-dark);
@@ -161,6 +162,36 @@
     .quote-card .quote-rank { font-size: 12.5px; color: var(--orange-dark); font-weight: 600; margin: 0 0 10px; }
     .quote-card p.quote-text { margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-muted); }
 
+    /* ---------- Timeline steps ---------- */
+    .steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 22px; }
+    .step-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 22px; position: relative; }
+    .badge-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--orange-tint); color: var(--orange-dark);
+      font-weight: 800; font-size: 14px; margin-bottom: 14px;
+    }
+    .step-card h3 { margin: 0 0 8px; font-size: 17px; color: var(--ink); }
+    .step-card p { margin: 0; font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+    .step-card .step-time {
+      display: inline-block; margin-top: 12px; font-size: 12px; font-weight: 700;
+      color: var(--orange-dark); background: var(--orange-tint); padding: 4px 10px; border-radius: 999px;
+    }
+
+    /* ---------- FAQ ---------- */
+    .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item { border: 1px solid var(--border); border-radius: 14px; background: #fff; overflow: hidden; }
+    .faq-question {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 20px; background: none; border: none; font-size: 15px; font-weight: 700; color: var(--ink);
+      cursor: pointer; text-align: left;
+    }
+    .faq-question svg { width: 18px; height: 18px; flex-shrink: 0; transition: transform .25s ease; }
+    .faq-item.open .faq-question svg { transform: rotate(45deg); }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+    .faq-item.open .faq-answer { max-height: 220px; }
+    .faq-answer p { margin: 0; padding: 0 20px 18px; font-size: 14px; line-height: 1.65; color: var(--text-muted); }
+
     /* cta banner */
     .cta-banner {
       background: linear-gradient(120deg, var(--ink) 0%, #2b2f45 100%);
@@ -173,7 +204,7 @@
     .site-footer { background: var(--ink-soft); color: #c7c9d6; padding: 64px 0 28px; }
     .footer-top {
       display: grid;
-      grid-template-columns: 1.3fr 1fr 1fr;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr;
       gap: 40px;
       padding-bottom: 40px;
       border-bottom: 1px solid rgba(255,255,255,.1);
@@ -213,13 +244,21 @@
     .footer-disclosure { max-width: 640px; line-height: 1.6; }
 
     /* responsive */
+    @media (max-width: 1024px) {
+      .footer-top { grid-template-columns: 1.2fr 1fr 1fr; }
+      .footer-col.footer-services { grid-column: 1 / -1; }
+      .footer-col.footer-services ul { flex-direction: row; flex-wrap: wrap; gap: 10px 28px; }
+    }
     @media (max-width: 960px) {
       .header-nav, .header-right { display: none; }
       .nav-toggle { display: inline-flex; }
       .stats-grid { grid-template-columns: repeat(2,1fr); }
       .cards-grid, .cards-grid.cols-3 { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: repeat(2,1fr); }
       .footer-top { grid-template-columns: 1fr 1fr; gap: 36px; }
       .footer-brand { grid-column: 1 / -1; max-width: 100%; }
+      .footer-col.footer-services { grid-column: auto; }
+      .footer-col.footer-services ul { flex-direction: column; gap: 11px; }
     }
 
     @media (max-width: 768px) {
@@ -242,6 +281,7 @@
       .cards-grid.cols-3 { grid-template-columns: 1fr; }
       .quote-card { flex-direction: row; align-items: flex-start; text-align: left; padding: 18px; }
       .quote-card img { width: 56px; height: 56px; flex-shrink: 0; }
+      .steps-grid { grid-template-columns: 1fr; }
       .filter-row { gap: 8px; }
       .filter-chip { font-size: 12px; padding: 7px 14px; }
       .roll-btn.big { padding: 12px 20px; font-size: 13px; }
@@ -358,14 +398,14 @@
     <div class="badge-row"><span class="badge-pill gray-300">Featured</span></div>
     <h2 class="big-heading">Two journeys, told in full.</h2>
     <div class="cards-grid">
-      <a href="#" class="media-card">
+      <a href="404.html" class="media-card">
         <div class="media-frame ratio-4x3" style="background:#1a1d2e;">
           <video autoplay muted loop playsinline poster="./Assets/mlm6.webp" src="./Assets/mlm6.webp"></video>
           <div class="hover-pill"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17a5 5 0 0 1 0-10h1"/><path d="M15 7a5 5 0 0 1 0 10h-1"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span><span class="hp-label">Watch story</span></div>
         </div>
         <div class="media-caption"><p class="desc">Started on a lunch break, replaced her salary in eighteen months.</p><p class="title">Priya's Story</p></div>
       </a>
-      <a href="#" class="media-card">
+      <a href="404.html" class="media-card">
         <div class="media-frame ratio-square" style="background:#6b6b6b;">
           <video autoplay muted loop playsinline poster="./Assets/mlm7.webp" src="./Assets/mlm7.webp"></video>
           <div class="hover-pill dark"><span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg></span><span class="hp-label">Read case study</span></div>
@@ -394,6 +434,83 @@
       <div class="quote-card" data-cat="team"><img src="./Assets/mlm11.webp" alt=""><div><p class="quote-name">Amara N.</p><p class="quote-rank">Director · 2.5 years in</p><p class="quote-text">Mentoring five people to Senior Partner taught me more about the plan than any training call did.</p></div></div>
       <div class="quote-card" data-cat="side"><img src="./Assets/mlm2.webp" alt=""><div><p class="quote-name">Rosa K.</p><p class="quote-rank">Senior Partner · 9 months in</p><p class="quote-text">Ten customers on auto-reorder is quietly the best decision I made in my first quarter.</p></div></div>
       <div class="quote-card" data-cat="fulltime"><img src="./Assets/mlm3.webp" alt=""><div><p class="quote-name">Ben H.</p><p class="quote-rank">Team Lead · 14 months in</p><p class="quote-text">The Academy launch track gave me a script for the first ten conversations — after that it got easier.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MILESTONES -->
+<section class="section-gray" id="timeline">
+  <div class="wrap px">
+    <div class="badge-row"><span class="badge-pill gray-300">The typical path</span></div>
+    <h2 class="big-heading">What the journey usually<br class="desktop-break"> looks like.</h2>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <span class="badge-num">1</span>
+        <h3>Try the products</h3>
+        <p>Most partners spend the first few weeks just using Stackly products themselves before ever mentioning them to anyone.</p>
+        <span class="step-time">Weeks 1–4</span>
+      </div>
+      <div class="step-card">
+        <span class="badge-num">2</span>
+        <h3>Build a retail base</h3>
+        <p>The early income comes from personal retail sales — a handful of customers who reorder on their own each month.</p>
+        <span class="step-time">Months 1–6</span>
+      </div>
+      <div class="step-card">
+        <span class="badge-num">3</span>
+        <h3>Mentor your first partner</h3>
+        <p>Once retail feels steady, most partners bring on one or two people they've mentored personally — not a wide recruit push.</p>
+        <span class="step-time">Months 6–12</span>
+      </div>
+      <div class="step-card">
+        <span class="badge-num">4</span>
+        <h3>Grow at your own pace</h3>
+        <p>From there, the timeline is different for everyone — some stay a side hustle for years, others build a full team.</p>
+        <span class="step-time">Year 1+</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section-white" id="stories-faq">
+  <div class="wrap px">
+    <div class="badge-row"><span class="badge-pill">Questions</span></div>
+    <h2 class="section-heading" style="text-align:center;font-size:clamp(26px,3.4vw,38px);font-weight:700;color:var(--ink);max-width:720px;margin:0 auto 44px;">Questions about these stories.</h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question">
+          Are these results typical for a new partner?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>No — these are individual timelines, not guarantees. Earnings depend on effort, skill, and market conditions, and most partners earn primarily through personal retail sales. Full figures are in our published Income Disclosure Statement.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          How are the partners featured on this page chosen?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>We rotate a mix of ranks and timelines — side hustle, full-time, and team-building — so the page reflects a range of paths, not just the fastest ones.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Do I have to build a team to earn with Stackly?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>No. Many partners stay focused entirely on personal retail sales for their whole time with Stackly — mentoring others is optional, not required.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Where can I read the full Income Disclosure Statement?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>It's linked at the top of this page and available any time from the footer — we'd rather you read the numbers before you commit to anything.</p></div>
+      </div>
     </div>
   </div>
 </section>
@@ -432,6 +549,17 @@
         </ul>
       </div>
 
+      <div class="footer-col footer-services">
+        <h4>Our Services</h4>
+        <ul>
+          <li><a href="404.html">Personal Storefront</a></li>
+          <li><a href="404.html">Meridian Academy</a></li>
+          <li><a href="404.html">Mentor Matching</a></li>
+          <li><a href="404.html">Compensation Calculator</a></li>
+          <li><a href="404.html">Product Subscriptions</a></li>
+        </ul>
+      </div>
+
       <div class="footer-col footer-contact">
         <h4>Reach Us</h4>
         <div class="footer-address">
@@ -466,6 +594,17 @@
       link.addEventListener('click', () => mobileMenu.classList.remove('open'));
     });
   }
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const q = item.querySelector('.faq-question');
+    if (!q) return;
+    q.addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
 
   // filter
   document.querySelectorAll('.filter-row').forEach(row => {

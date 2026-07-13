@@ -400,7 +400,7 @@
     }
     .footer-top {
       display: grid;
-      grid-template-columns: 1.3fr 1fr 1fr;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr;
       gap: 40px;
       padding-bottom: 32px;
       border-bottom: 1px solid rgba(255,255,255,.1);
@@ -439,6 +439,11 @@
     .footer-disclosure { max-width: 600px; line-height: 1.6; }
 
     /* responsive */
+    @media (max-width: 1024px) {
+      .footer-top { grid-template-columns: 1.2fr 1fr 1fr; }
+      .footer-col.footer-services { grid-column: 1 / -1; }
+      .footer-col.footer-services ul { flex-direction: row; flex-wrap: wrap; gap: 10px 28px; }
+    }
     @media (max-width: 900px) {
       .header-nav, .header-right { display: none; }
       .nav-toggle { display: inline-flex; }
@@ -447,6 +452,8 @@
       .ladder-wrap { grid-template-columns: 1fr; gap: 28px; }
       .footer-top { grid-template-columns: 1fr 1fr; gap: 30px; }
       .footer-brand { grid-column: 1 / -1; max-width: 100%; }
+      .footer-col.footer-services { grid-column: auto; }
+      .footer-col.footer-services ul { flex-direction: column; gap: 10px; }
     }
     @media (max-width: 600px) {
       .px { padding-left: 16px; padding-right: 16px; }
@@ -672,6 +679,17 @@
           <li><a href="compensation.html">Compensation</a></li>
           <li><a href="stories.html">Stories</a></li>
           <li><a href="join.html">Join</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-services">
+        <h4>Our Services</h4>
+        <ul>
+          <li><a href="404.html">Personal Storefront</a></li>
+          <li><a href="404.html">Meridian Academy</a></li>
+          <li><a href="404.html">Mentor Matching</a></li>
+          <li><a href="404.html">Compensation Calculator</a></li>
+          <li><a href="404.html">Product Subscriptions</a></li>
         </ul>
       </div>
 

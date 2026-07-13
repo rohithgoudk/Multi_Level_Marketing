@@ -78,12 +78,32 @@
     .nav-item.nav-active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
     .nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
     .nav-badge { margin-left: auto; background: var(--accent); color: #1a140b; font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 999px; }
+    .sidebar-user {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px; margin-top: 10px; margin-bottom: 4px;
+      border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border);
+    }
+    .sidebar-user-avatar {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: var(--accent-soft); color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; text-transform: uppercase;
+    }
+    .sidebar-user-info { min-width: 0; flex: 1; }
+    .sidebar-user-name {
+      font-size: 12.5px; font-weight: 700; color: var(--text);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .sidebar-user-email {
+      font-size: 11px; color: var(--text-dimmer);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
     .logout-full-btn {
-      margin-top: auto; width: 100%; padding: 11px; border-radius: 10px;
+      margin-top: 8px; width: 100%; padding: 11px; border-radius: 10px;
       background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
       color: #fca5a5; font-size: 13px; font-weight: 600;
       display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: background .2s ease; text-decoration: none;
+      transition: background .2s ease; text-decoration: none; cursor: pointer;
     }
     .logout-full-btn:hover { background: rgba(239,68,68,0.18); }
     .main-content {
@@ -133,6 +153,52 @@
       position: absolute; top: 7px; right: 8px; width: 7px; height: 7px;
       border-radius: 50%; background: var(--red); border: 1.5px solid var(--surface);
     }
+
+    /* topbar user chip + dropdown */
+    .topbar-user { position: relative; flex-shrink: 0; }
+    .topbar-user-btn {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 999px; padding: 5px 12px 5px 5px;
+      transition: border-color .2s ease;
+    }
+    .topbar-user-btn:hover { border-color: rgba(217,164,65,0.4); }
+    .topbar-user-avatar {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      background: var(--accent); color: #1a140b;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; text-transform: uppercase;
+    }
+    .topbar-user-name {
+      font-size: 12.5px; font-weight: 700; color: var(--text);
+      max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .topbar-user-caret { font-size: 10px; color: var(--text-dimmer); }
+    .topbar-user-menu {
+      position: absolute; top: calc(100% + 10px); right: 0; width: 230px;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 8px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.4);
+      opacity: 0; visibility: hidden; transform: translateY(-6px);
+      transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+      z-index: 60;
+    }
+    .topbar-user.open .topbar-user-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+    .topbar-user-menu-email {
+      padding: 8px 10px 10px; border-bottom: 1px solid var(--border); margin-bottom: 6px;
+    }
+    .topbar-user-menu-email .label { font-size: 10px; font-weight: 700; color: var(--text-dimmer); text-transform: uppercase; letter-spacing: .05em; }
+    .topbar-user-menu-email .value { font-size: 12.5px; font-weight: 600; color: var(--text); margin-top: 2px; word-break: break-all; }
+    .topbar-user-menu-item {
+      display: flex; align-items: center; gap: 9px; width: 100%;
+      padding: 9px 10px; border-radius: 8px;
+      background: none; border: none; text-align: left;
+      font-size: 12.5px; font-weight: 600; color: var(--text-dim);
+      transition: background .15s ease, color .15s ease;
+    }
+    .topbar-user-menu-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .topbar-user-menu-item.danger:hover { background: rgba(239,68,68,0.14); color: #fca5a5; }
+
     .content-area { padding: 24px 28px 48px; min-width: 0; max-width: 100%; overflow-x: hidden; }
     .stats-grid {
       display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px;
@@ -320,6 +386,8 @@
       .search-box input { width: 120px; }
       .team-grid { grid-template-columns: 1fr; }
       .pub-grid { grid-template-columns: 1fr; }
+      .topbar-user-name { display: none; }
+      .topbar-user-btn { padding: 5px; }
     }
     @media (max-width: 480px) {
       .stats-grid { grid-template-columns: 1fr; }
@@ -355,7 +423,15 @@
     <nav class="sidebar-nav" id="nav-main"></nav>
     <div class="sidebar-section-label">MANAGEMENT</div>
     <nav class="sidebar-nav" id="nav-management"></nav>
-    <a href="login.html" class="logout-full-btn" id="logout-btn">↪ Logout</a>
+
+    <div class="sidebar-user" id="sidebar-user">
+      <div class="sidebar-user-avatar" id="sidebar-user-avatar">–</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sidebar-user-name">Signed out</div>
+        <div class="sidebar-user-email" id="sidebar-user-email">—</div>
+      </div>
+    </div>
+    <button class="logout-full-btn" id="logout-btn">↪ Logout</button>
   </aside>
   <main class="main-content">
     <header class="topbar" id="topbar">
@@ -372,6 +448,22 @@
           <input placeholder="Search regions, products, leaders…">
         </div>
         <button class="icon-btn" id="notif-btn" aria-label="Notifications">🔔<span class="notif-dot"></span></button>
+
+        <div class="topbar-user" id="topbar-user">
+          <button class="topbar-user-btn" id="topbar-user-btn">
+            <span class="topbar-user-avatar" id="topbar-user-avatar">–</span>
+            <span class="topbar-user-name" id="topbar-user-name">Signed out</span>
+            <span class="topbar-user-caret">▾</span>
+          </button>
+          <div class="topbar-user-menu" id="topbar-user-menu">
+            <div class="topbar-user-menu-email">
+              <div class="label">Email</div>
+              <div class="value" id="topbar-user-email">—</div>
+            </div>
+            <button class="topbar-user-menu-item" data-nav="settings">⚙️ Settings</button>
+            <button class="topbar-user-menu-item danger" id="topbar-logout-btn">↪ Logout</button>
+          </div>
+        </div>
       </div>
     </header>
     <div class="content-area" id="content-area"></div>
@@ -484,6 +576,49 @@
     training:   { title: "Training Library", sub: "Playbooks, guides, and annual reports." },
     settings:   { title: "Settings", sub: "Account preferences and configuration." }
   };
+
+  // =========================================================
+  // SIGNED-IN USER — read whoever logged in (login.html stores
+  // { email, role, name, loginTime } in localStorage) and reflect
+  // it across the sidebar, topbar, and Settings page.
+  // =========================================================
+  function getCurrentUser() {
+    try {
+      const raw = localStorage.getItem('user');
+      const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+      if (!raw || !isAuthenticated) return null;
+      return JSON.parse(raw);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function usernameFromEmail(email) {
+    if (!email) return '';
+    return email.includes('@') ? email.split('@')[0] : email;
+  }
+
+  const currentUser = getCurrentUser();
+  const currentEmail = currentUser ? (currentUser.email || '') : '';
+  const currentUsername = currentUser ? usernameFromEmail(currentEmail) : '';
+  const currentInitial = (currentUsername || currentEmail || '?').charAt(0).toUpperCase();
+
+  function paintUserChrome() {
+    const nameToShow = currentUsername || currentEmail || 'Signed out';
+    document.getElementById('sidebar-user-avatar').textContent = currentInitial;
+    document.getElementById('sidebar-user-name').textContent = nameToShow;
+    document.getElementById('sidebar-user-email').textContent = currentEmail || '—';
+
+    document.getElementById('topbar-user-avatar').textContent = currentInitial;
+    document.getElementById('topbar-user-name').textContent = nameToShow;
+    document.getElementById('topbar-user-email').textContent = currentEmail || '—';
+  }
+
+  function logout() {
+    localStorage.removeItem('user');
+    localStorage.removeItem('isAuthenticated');
+    window.location.href = 'login.html';
+  }
 
   let state = {
     activeNav: "dashboard",
@@ -881,13 +1016,15 @@
 
   function renderSettings() {
     const s = state.settings;
+    const displayName = currentUsername || currentEmail || "Signed out";
+    const displayEmail = currentEmail || "No account signed in";
     return `
-      <div class="card"><div class="card-header"><div><h2 class="card-title">Account</h2><p class="card-sub">Your profile information</p></div></div>
+      <div class="card"><div class="card-header"><div><h2 class="card-title">Account</h2><p class="card-sub">Signed-in profile — shown wherever your account appears in the console</p></div></div>
         <div style="display:flex;align-items:center;gap:18px;margin-bottom:20px;flex-wrap:wrap">
-          <img src="https://placehold.co/64x64/1b1b29/f5f5f7?text=You" alt="avatar" style="width:64px;height:64px;border-radius:50%;border:2px solid rgba(217,164,65,0.4)">
-          <div><div style="font-weight:700;color:#fff;font-size:16px">Alex Morgan</div>
-          <div style="font-size:13px;color:var(--text-dim);margin-top:2px">VP of Partner Success · alex.morgan@meridian.com</div>
-          <div style="font-size:12px;color:#D9A441;margin-top:4px">🏬 7 years with Meridian</div></div>
+          <div style="width:64px;height:64px;border-radius:50%;border:2px solid rgba(217,164,65,0.4);background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;text-transform:uppercase;flex-shrink:0">${currentInitial}</div>
+          <div><div style="font-weight:700;color:#fff;font-size:16px;text-transform:capitalize">${displayName}</div>
+          <div style="font-size:13px;color:var(--text-dim);margin-top:2px">${displayEmail}</div>
+          <div style="font-size:12px;color:#D9A441;margin-top:4px">🏬 ${currentUser ? (currentUser.role === 'admin' ? 'Admin account' : 'Partner account') : 'Not signed in'}</div></div>
         </div>
         <button class="btn-outline" style="border-color:#D9A441;color:#D9A441" onclick="go404()">Edit Profile</button>
       </div>
@@ -909,6 +1046,12 @@
             <div><div style="font-weight:700;color:#fff;font-size:13.5px">Language</div><div style="font-size:12.5px;color:var(--text-dim);margin-top:2px">Interface display language</div></div>
             <select class="pref-select" id="lang-select">${["English", "French", "Spanish", "Arabic", "Greek"].map(l => `<option ${s.language === l ? "selected" : ""}>${l}</option>`).join("")}</select>
           </div>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><div><h2 class="card-title">Session</h2><p class="card-sub">Sign out of this account on this device</p></div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+          <div style="font-size:12.5px;color:var(--text-dim)">Signed in as <strong style="color:#fff">${displayEmail}</strong>. Logging out will clear this session and return you to the sign-in screen.</div>
+          <button class="btn-outline" style="border-color:rgba(239,68,68,0.4);color:#fca5a5;flex-shrink:0" id="settings-logout-btn">↪ Logout</button>
         </div>
       </div>
       <div class="card"><div class="card-header"><div><h2 class="card-title">Danger Zone</h2><p class="card-sub">Irreversible account actions</p></div></div>
@@ -950,12 +1093,15 @@
     document.getElementById("page-sub-text").textContent = page.sub;
     document.getElementById("content-area").innerHTML = pageRenderers[state.activeNav]();
     renderNav();
+    const settingsLogoutBtn = document.getElementById("settings-logout-btn");
+    if (settingsLogoutBtn) settingsLogoutBtn.addEventListener("click", logout);
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }
 
   function navigateTo(id) {
     state.activeNav = id;
     closeSidebar();
+    closeTopbarUserMenu();
     renderPage();
   }
 
@@ -967,11 +1113,21 @@
     document.getElementById("sidebar").classList.remove("sidebar-open");
     document.getElementById("sidebar-overlay").classList.remove("show");
   }
+  function closeTopbarUserMenu() {
+    document.getElementById("topbar-user").classList.remove("open");
+  }
 
   document.getElementById("hamburger-btn").addEventListener("click", openSidebar);
   document.getElementById("close-sidebar-btn").addEventListener("click", closeSidebar);
   document.getElementById("sidebar-overlay").addEventListener("click", closeSidebar);
   document.getElementById("notif-btn").addEventListener("click", go404);
+  document.getElementById("logout-btn").addEventListener("click", logout);
+  document.getElementById("topbar-logout-btn").addEventListener("click", logout);
+  document.getElementById("topbar-user-btn").addEventListener("click", function(e) {
+    e.stopPropagation();
+    document.getElementById("topbar-user").classList.toggle("open");
+  });
+  document.addEventListener("click", closeTopbarUserMenu);
 
   document.addEventListener("click", function(e) {
     const navBtn = e.target.closest("[data-nav]");
@@ -1003,6 +1159,7 @@
     }
   });
 
+  paintUserChrome();
   renderPage();
 </script>
 </body>

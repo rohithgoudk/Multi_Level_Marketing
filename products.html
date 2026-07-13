@@ -204,6 +204,13 @@
   /* ---------- Quote cards ---------- */
   .quote-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:26px;display:flex;gap:16px;align-items:flex-start;}
   .quote-card img{width:56px;height:56px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+  .quote-avatar{
+    width:52px;height:52px;border-radius:50%;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-size:15px;letter-spacing:.02em;
+  }
+  .quote-stars{display:flex;gap:2px;margin-bottom:10px;}
+  .quote-stars svg{width:14px;height:14px;fill:var(--orange);stroke:none;}
   .quote-card .quote-name{font-weight:700;color:var(--ink);font-size:14.5px;margin:0 0 2px;}
   .quote-card .quote-rank{font-size:12.5px;color:var(--orange-dark);font-weight:600;margin:0 0 10px;}
   .quote-card p.quote-text{margin:0;font-size:14px;line-height:1.6;color:var(--text-muted);}
@@ -258,7 +265,7 @@
 
   /* ---------- Footer ---------- */
   .site-footer{background:var(--ink-soft);color:#c7c9d6;padding:64px 0 28px;}
-  .footer-top{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.1);}
+  .footer-top{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.1);}
   .footer-logo-img{height:26px;margin-bottom:16px;}
   .footer-brand p{font-size:13.5px;line-height:1.7;color:#9498a8;max-width:320px;}
 
@@ -286,6 +293,11 @@
   .footer-disclosure{max-width:640px;line-height:1.6;}
 
   /* ---------- Responsive ---------- */
+  @media (max-width:1024px){
+    .footer-top{grid-template-columns:1.2fr 1fr 1fr;}
+    .footer-col.footer-services{grid-column:1 / -1;}
+    .footer-col.footer-services ul{flex-direction:row;flex-wrap:wrap;gap:10px 28px;}
+  }
   @media (max-width:960px){
     .header-nav,.header-right{display:none;}
     .nav-toggle{display:inline-flex;}
@@ -297,6 +309,8 @@
     .ladder-wrap{grid-template-columns:1fr;}
     .footer-top{grid-template-columns:1fr 1fr;gap:36px;}
     .footer-brand{grid-column:1 / -1;max-width:100%;}
+    .footer-col.footer-services{grid-column:auto;}
+    .footer-col.footer-services ul{flex-direction:column;gap:11px;}
   }
   @media (max-width:560px){
     .footer-top{grid-template-columns:1fr;gap:32px;}
@@ -405,13 +419,10 @@
     <h2 class="big-heading">The two products that started<br class="desktop-break"> every partner's storefront.</h2>
 
     <div class="cards-grid">
-      <a href="#" class="media-card">
+      <a href="404.html" class="media-card">
         <div class="media-frame ratio-4x3">
           <img src="./Assets/mlm4.webp" alt="Radiance daily serum bottle">
-          <div class="hover-pill">
-            <span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
-            <span class="hp-label">Shop now</span>
-          </div>
+          
         </div>
         <div class="media-caption">
           <p class="desc">Vitamin C + niacinamide — our best-selling monthly reorder.</p>
@@ -419,13 +430,10 @@
         </div>
       </a>
 
-      <a href="#" class="media-card">
+      <a href="404.html" class="media-card">
         <div class="media-frame ratio-square">
           <img src="./Assets/mlm5.webp" alt="Pure collagen wellness blend">
-          <div class="hover-pill dark">
-            <span class="hp-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
-            <span class="hp-label">View product</span>
-          </div>
+          
         </div>
         <div class="media-caption">
           <p class="desc">Unflavored marine collagen that mixes into any morning routine.</p>
@@ -496,6 +504,106 @@
   </div>
 </section>
 
+<!-- ======================= TESTIMONIALS ======================= -->
+<section class="section-gray" id="reviews">
+  <div class="wrap px">
+    <div class="badge-row"><span class="badge-pill gray-300">Real reviews</span></div>
+    <h2 class="big-heading">Loved by the people<br class="desktop-break"> who actually use them.</h2>
+
+    <div class="cards-grid cols-3">
+      <div class="quote-card">
+        <div class="quote-avatar swatch-1">PM</div>
+        <div>
+          <div class="quote-stars">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+          </div>
+          <p class="quote-name">Priya M.</p>
+          <p class="quote-rank">Verified customer</p>
+          <p class="quote-text">The Radiance Daily Serum is the first product that's actually made it past week two in my routine. I'm on my fourth bottle now.</p>
+        </div>
+      </div>
+
+      <div class="quote-card">
+        <div class="quote-avatar swatch-2">RK</div>
+        <div>
+          <div class="quote-stars">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+          </div>
+          <p class="quote-name">Ravi K.</p>
+          <p class="quote-rank">Verified customer</p>
+          <p class="quote-text">Switched my whole household to the Refill Home Concentrate. One bottle really does last through a dozen refills — didn't believe it until I counted.</p>
+        </div>
+      </div>
+
+      <div class="quote-card">
+        <div class="quote-avatar swatch-5">AS</div>
+        <div>
+          <div class="quote-stars">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
+          </div>
+          <p class="quote-name">Aisha S.</p>
+          <p class="quote-rank">Verified customer</p>
+          <p class="quote-text">The Silk Strands Shampoo Bar sold itself to my whole friend group after one wash. Now half of them order through my storefront.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FAQ ======================= -->
+<section class="section-white" id="product-faq">
+  <div class="wrap px">
+    <div class="badge-row"><span class="badge-pill">Questions</span></div>
+    <h2 class="section-heading tight">Things people ask before their first order.</h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question">
+          Are Stackly products vegan and cruelty-free?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>Yes — every product across skincare, wellness, haircare, and home is formulated without animal-derived ingredients and is never tested on animals.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Can I cancel or change an auto-reorder subscription?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>Any time. Swap products, change frequency, or cancel entirely from your storefront dashboard — there's no lock-in period.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          How long does shipping usually take?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>Most domestic orders arrive within 3–5 business days. International shipping timelines vary by country and are shown at checkout.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          Do you offer a satisfaction guarantee?
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-answer"><p>Every first-time order is backed by a 30-day satisfaction guarantee — if it's not a fit, your storefront checkout handles the return automatically.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ======================= STOREFRONT CTA ======================= -->
 <section class="section-gray">
   <div class="wrap px">
@@ -530,6 +638,17 @@
           <li><a href="compensation.html">Compensation</a></li>
           <li><a href="stories.html">Stories</a></li>
           <li><a href="join.html">Join</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-services">
+        <h4>Our Services</h4>
+        <ul>
+          <li><a href="404.html">Personal Storefront</a></li>
+          <li><a href="404.html">Meridian Academy</a></li>
+          <li><a href="404.html">Mentor Matching</a></li>
+          <li><a href="404.html">Compensation Calculator</a></li>
+          <li><a href="404.html">Product Subscriptions</a></li>
         </ul>
       </div>
 
