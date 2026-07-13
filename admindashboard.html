@@ -591,13 +591,13 @@ function fmt(n) { return "$" + n.toLocaleString(); }
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 const pageMap = {
-  dashboard: { title: "Dashboard", sub: "Network overview.", render: renderDashboardPage },
-  distributors: { title: "Distributors", sub: "Manage all registered distributors and ranks.", render: renderDistributorsPage },
-  teams: { title: "Teams", sub: "All active and established downline networks.", render: renderTeamsPage },
-  products: { title: "Products", sub: "Catalog of all Lumora product lines.", render: renderProductsPage },
-  commissions: { title: "Commissions", sub: "Payout allocation and spend tracking.", render: renderCommissionsPage },
-  approvals: { title: "Approvals", sub: "Review and manage pending requests.", render: renderApprovalsPage },
-  settings: { title: "Settings", sub: "Account preferences and configuration.", render: renderSettingsPage },
+  dashboard: { title: "Dashboard", sub: "", render: renderDashboardPage },
+  distributors: { title: "Distributors", sub: "", render: renderDistributorsPage },
+  teams: { title: "Teams", sub: "", render: renderTeamsPage },
+  products: { title: "Products", sub: "", render: renderProductsPage },
+  commissions: { title: "Commissions", sub: "", render: renderCommissionsPage },
+  approvals: { title: "Approvals", sub: "", render: renderApprovalsPage },
+  settings: { title: "Settings", sub: "", render: renderSettingsPage },
 };
 
 // ─────────────────────────────────────────────────────────────
